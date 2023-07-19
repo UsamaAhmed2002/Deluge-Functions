@@ -1,0 +1,16 @@
+ signalMap = Map();
+ signalMap.put("signal_namespace","clicksendext.clicksendsms");
+  signalMap.put("subject","GSgs");
+  	signalMap.put("subject","test");
+ signalMap.put("message","FNSFS");
+ 	signalMap.put("message","subj");
+ signalMap.put("email","fairchanceforcrm36@gmail.com");
+		
+ 	actionsList = List();
+ 	actionMap = Map();
+ 	actionMap.put("type","link");
+ 	actionMap.put("display_name","View");
+ 	actionMap.put("url","/crm/EntityInfo.do?module=" + module + "&id=" + instance_id);
+ 	actionsList.add(actionMap);
+ 	signalMap.put("actions",actionsList);
+ result = zoho.crm.raiseSignal(signalMap);
