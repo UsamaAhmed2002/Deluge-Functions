@@ -1,5 +1,5 @@
 <%{
-	src = "https://creatorapp.zoho.com/businessresourcellc/business-resource-buyer-portal/view-embed/AllUsers";
+	src = "https://creatorapp.zoho.com/"zoho.appuri+"/view-embed/AllUsers";
 	%>
 <style>
 	div[formlinkname="StatelessForSearch"]{
