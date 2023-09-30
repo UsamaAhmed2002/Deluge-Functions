@@ -1,0 +1,107 @@
+<%{
+	if(input.Categories != null && input.Categories.isEmpty() == false)
+	{
+		categories = input.Categories.toList(",");
+		CriteriaList = List();
+		for each  cat in categories
+		{
+			CriteriaList.add(cat.toLong());
+		}
+		Cnt = Contacts[Categories == CriteriaList];
+	}
+	else
+	{
+		Cnt = Contacts[ID != null];
+	}
+	%>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 5 Table</title>
+    <!-- Add Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<style>
+	/* Custom CSS for the main header */
+        .admin-header {
+            background-color: #ffffff; /* Background color */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Light shadow effect */
+            padding: 20px; /* Add padding for spacing */
+            text-align: center; /* Center-align the content */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+        }
+
+        /* Custom CSS for the header text */
+        .admin-header h1 {
+            margin: 0; /* Remove default margin */
+            color: #333333; /* Text color */
+            font-size: 24px; /* Font size */
+			width:25%;
+			padding:10px;
+			border:1px solid #e1e1e1;
+			box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+        }
+        /* Custom CSS for center-aligning the table */
+        .table-container {
+            max-height: 70vh; /* Maximum height for the table container */
+            overflow-y: auto; /* Add vertical scrollbar when content overflows */
+        }
+
+        /* Style for the table header */
+        .fixed-header {
+            position: sticky;
+            top: 0;
+            background-color: #f2f2f2;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+<%
+if(Cnt.containsIgnoreCase("No Matching ")==true){
+	%>
+	<h1 style="text-align:center;"> No Records Found !</h1>
+	<%
+}else{
+	%>
+	<div class="mt-5">
+    <div class="table-container">
+        <table class="table table-striped table-bordered">
+            <thead class="fixed-header">
+                <tr>
+					<th>#</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+<%
+	count = 0;
+	for each  Item in Cnt
+	{
+		count = count + 1;
+		%>
+<tr>
+						<td><%=count%></td>
+                        <td><%=Item.First_Name%> <%=Item.Last_Name%></td>
+                        <td><%=Item.Email%></td>
+                        <td><a href="https://creatorapp.zoho.com<%=zoho.appuri%>record-summary/All_Contacts/<%=Item.ID%>/" target="_blank" >View Details</a></td>
+                    </tr>
+<%
+	}
+	%>
+</tbody>
+        </table>
+    </div>
+</div>
+
+	<%
+}
+	%>
+
+</body>
+<%
+
+}%>
