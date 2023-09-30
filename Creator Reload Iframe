@@ -1,0 +1,16 @@
+<%{
+	src = "https://creatorapp.zoho.com/businessresourcellc/business-resource-buyer-portal/view-embed/AllUsers";
+	%>
+<style>
+	div[formlinkname="StatelessForSearch"]{
+		height:auto !important;
+	}
+	form[name="StatelessForSearch"]{
+		display:flex ;
+	}
+	</style>
+    <div elName='zc-component' formLinkName='StatelessForSearch' params='zc_Header=false&amp;zc_SuccMsg=Data Added Successfully!&amp;zc_SubmitVal=Submit&amp;zc_ResetVal=Reset'>Loading Form...</div>
+<iframe name="SearchUsers" src=<%=src%>  width="100%" height="720px" > </iframe>
+<%
+
+}%>
