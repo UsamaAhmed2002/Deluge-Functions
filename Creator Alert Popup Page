@@ -1,0 +1,27 @@
+<%{
+	alertTitle = ifNull(input.Title,"");
+	alertBody = ifNull(input.Body,"");
+	%>
+<style>
+		.popupboxouter{
+			background:none;
+			border:0;
+		}
+		.zc-pb-tile-card{
+			padding:0px 20px 10px;
+		}
+		.popupClose{
+			position:relative !important;
+			z-index:1000;
+			top:28px;
+			right:46px !important;
+		}
+		.fa.fa-close::before , .fa.fa-close::after{
+			background:#999 !important;
+		}
+	</style>
+	<h4><%=alertTitle%></h4>
+	<p><%=alertBody%></p>
+<%
+
+}%>
