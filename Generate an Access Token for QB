@@ -1,0 +1,37 @@
+// client_id = zoho.crm.getOrgVariable("client_id");
+// client_secret = zoho.crm.getOrgVariable("client_secret");
+TokenUri = " https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer";
+head = Map();
+head.put("Accept","application/json");
+head.put("Content-Type","application/x-www-form-urlencoded");
+// 	head.put("Authorization","Bearer "+zoho.encryption.base64encode(cre.client_id+":"+cre.client_secret));
+head.put("Authorization","Basic " + zoho.encryption.base64encode(client_id + ":" + client_secret));
+params = Map();
+params.put("grant_type","authorization_code");
+params.put("code","AB11695240571arwlyP6DJ74YcR0ucF40Je49Xmx3gnz79ADTH");
+params.put("redirect_uri","https://google.com/redirect");
+AccessToken = invokeurl
+[
+	url :TokenUri
+	type :POST
+	parameters:params
+	headers:head
+];
+info AccessToken;
+if(AccessToken.get("access_token") != "")
+{
+	access_token = AccessToken.get("access_token");
+	refresh_token = AccessToken.get("refresh_token");
+	firstMap = Map();
+	valueMap = Map();
+	firstMap.put("apiname","access_token");
+	firstMap.put("value",access_token);
+	resp = zoho.crm.invokeConnector("crm.set",firstMap);
+	valueMap.put("apiname","refresh_token");
+	valueMap.put("value",refresh_token);
+	resp = zoho.crm.invokeConnector("crm.set",valueMap);
+	info resp;
+	info access_token;
+	info refresh_token;
+}
+return "";
