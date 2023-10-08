@@ -1,0 +1,142 @@
+// Create or Update Invoice in QuickBooks
+LineList = List();
+POLinelist = List();
+for each  item in salesorder.get("Product_Details")
+{
+	productName = item.get("product").get("name");
+	prodDetails = zoho.crm.getRecordById("Products",item.get("product").get("id"));
+	logs.put("Product Details",prodDetails);
+	uri = baseUri + "/query?query=select * from Item Where FullyQualifiedName = '" + productName + "'&minorversion=65";
+	itemres = invokeurl
+	[
+		url :uri
+		type :GET
+		headers:head
+	];
+	logs.put("QB Item",itemres);
+	if(itemres.get("QueryResponse").isEmpty() == true)
+	{
+		LineDet = Map();
+		POLineMap = Map();
+		POLineMap.put("DetailType","ItemBasedExpenseLineDetail");
+		POLineMap.put("Amount","0.00");
+		POCustomerRef = Map();
+		POItemBasedExpenseLineDetail = Map();
+		LineDet.put("DetailType","SalesItemLineDetail");
+		SalesItemLineDetail = Map();
+		ItemRef = Map();
+		IncomeAccountRef = Map();
+		IncomeAccountRef.put("name","Services");
+		IncomeAccountRef.put("value",5);
+		logs.put("Create Item",true);
+		ItemMap = Map();
+		ExpAccRefMap = Map();
+		ExpAccRefMap.put("name","Cost of Goods Sold");
+		ExpAccRefMap.put("value",30);
+		ItemMap.put("Name",prodDetails.get("Product_Name"));
+		ItemMap.put("UnitPrice",item.get("list_price"));
+		ItemMap.put("Taxable",prodDetails.get("Taxable"));
+		ItemMap.put("Type","Service");
+		ItemMap.put("ExpenseAccountRef",ExpAccRefMap);
+		ItemMap.put("IncomeAccountRef",IncomeAccountRef);
+		ItemMap.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		createItem = invokeurl
+		[
+			url :baseUri + "/item?minorversion=65"
+			type :POST
+			parameters:ItemMap.toString()
+			headers:head
+		];
+		info "Create Item" + createItem;
+		LineDet.put("Amount",item.get("total"));
+		ItemRef.put("name",createItem.get("Item").get("name"));
+		ItemRef.put("value",createItem.get("Item").get("Id"));
+		//////////////
+		////PO Creation map Starts Here
+		POItemBasedExpenseLineDetail.put("ItemRef",ItemRef);
+		POCustomerRef.put("name",QBCustomer.get("Customer").get("DisplayName"));
+		POCustomerRef.put("value",QBCustomer.get("Customer").get("Id"));
+		POItemBasedExpenseLineDetail.put("CustomerRef",POCustomerRef);
+		POItemBasedExpenseLineDetail.put("Qty",item.get("quantity"));
+		POItemBasedExpenseLineDetail.put("UnitPrice","0.00");
+		POItemBasedExpenseLineDetail.put("BillableStatus",item.get("NotBillable"));
+		POLineMap.put("ItemBasedExpenseLineDetail",POItemBasedExpenseLineDetail);
+		POLineMap.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		// 		POLineMap.put("Description",item.get("product_description"));
+		POLinelist.add(POLineMap);
+		/////////////////////
+		//////Invoice Creation map Starts Herer
+		LineDet.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		// 		LineDet.put("Description",item.get("product_description"));
+		SalesItemLineDetail.put("UnitPrice",item.get("list_price"));
+		SalesItemLineDetail.put("Qty",item.get("quantity"));
+		SalesItemLineDetail.put("ItemRef",ItemRef);
+		LineDet.put("SalesItemLineDetail",SalesItemLineDetail);
+		LineList.add(LineDet);
+		logs.put("Create Item Res",createItem);
+	}
+	else
+	{
+		logs.put("Update Item",true);
+		LineDet = Map();
+		POLineMap = Map();
+		POLineMap.put("DetailType","ItemBasedExpenseLineDetail");
+		POLineMap.put("Amount","0.00");
+		POCustomerRef = Map();
+		POItemBasedExpenseLineDetail = Map();
+		LineDet = Map();
+		LineDet.put("DetailType","SalesItemLineDetail");
+		SalesItemLineDetail = Map();
+		ItemRef = Map();
+		IncomeAccountRef = Map();
+		IncomeAccountRef.put("name","Services");
+		IncomeAccountRef.put("value",5);
+		ItemMap = Map();
+		ExpAccRefMap = Map();
+		ExpAccRefMap.put("name","Cost of Goods Sold");
+		ExpAccRefMap.put("value",30);
+		ItemMap.put("Name",prodDetails.get("Product_Name"));
+		ItemMap.put("UnitPrice",item.get("list_price"));
+		ItemMap.put("Taxable",prodDetails.get("Taxable"));
+		ItemMap.put("Type","Service");
+		ItemMap.put("ExpenseAccountRef",ExpAccRefMap);
+		ItemMap.put("IncomeAccountRef",IncomeAccountRef);
+		ItemMap.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		ItemMap.put("Id",itemres.get("QueryResponse").get("Item").get(0).get("Id"));
+		ItemMap.put("SyncToken",itemres.get("QueryResponse").get("Item").get(0).get("SyncToken"));
+		updateItem = invokeurl
+		[
+			url :baseUri + "/item?minorversion=65"
+			type :POST
+			parameters:ItemMap.toString()
+			headers:head
+		];
+		info "Update Item" + updateItem;
+		//////////////
+		////PO Creation map Starts Here
+		POItemBasedExpenseLineDetail.put("ItemRef",ItemRef);
+		POCustomerRef.put("name",QBCustomer.get("Customer").get("DisplayName"));
+		POCustomerRef.put("value",QBCustomer.get("Customer").get("Id"));
+		POItemBasedExpenseLineDetail.put("CustomerRef",POCustomerRef);
+		POItemBasedExpenseLineDetail.put("Qty",item.get("quantity"));
+		POItemBasedExpenseLineDetail.put("UnitPrice","0.00");
+		POItemBasedExpenseLineDetail.put("BillableStatus",item.get("NotBillable"));
+		POLineMap.put("ItemBasedExpenseLineDetail",POItemBasedExpenseLineDetail);
+		POLineMap.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		// 		POLineMap.put("Description",item.get("product_description"));
+		POLinelist.add(POLineMap);
+		////////////=======================================
+		//////Invoice Creation Data Start
+		ItemRef.put("name",updateItem.get("Item").get("name"));
+		ItemRef.put("value",updateItem.get("Item").get("Id"));
+		LineDet.put("Amount",item.get("total"));
+		LineDet.put("Description",item.get("product_description").replaceAll("\n"," , "));
+		// 		LineDet.put("Description",item.get("product_description"));
+		SalesItemLineDetail.put("UnitPrice",item.get("list_price"));
+		SalesItemLineDetail.put("Qty",item.get("quantity"));
+		SalesItemLineDetail.put("ItemRef",ItemRef);
+		LineDet.put("SalesItemLineDetail",SalesItemLineDetail);
+		LineList.add(LineDet);
+		logs.put("Update Item Res",updateItem);
+	}
+}
