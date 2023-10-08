@@ -1,0 +1,118 @@
+tokens = standalone.refreshAccessToken();
+logs = Map();
+createInv = Map();
+baseUri = "https://quickbooks.api.intuit.com/v3/company/9130357245838016";
+// Get sales order record from Zoho CRM
+salesorder = zoho.crm.getRecordById("Sales_Orders",id);
+SOattachement = zoho.crm.getRelatedRecords("Attachments","Sales_Orders",salesorder.get("id"));
+// info salesorder;
+logs.put("Sales Order",salesorder);
+// Get Contact details
+Contact = salesorder.get("Contact_Name");
+if(Contact != null)
+{
+	contactDetails = zoho.crm.getRecordById("Contacts",Contact.get("id"));
+}
+// info contactDetails;
+logs.put("Contact Details",contactDetails);
+// Get Account details
+Account = salesorder.get("Account_Name");
+if(Account != null)
+{
+	accountDetails = zoho.crm.getRecordById("Accounts",Account.get("id"));
+}
+Vendor = salesorder.get("Vendor");
+// info accountDetails;
+logs.put("Account Details",accountDetails);
+// Set headers for QuickBooks API
+head = Map();
+head.put("Authorization","Bearer " + zoho.crm.getOrgVariable("access_token"));
+head.put("Accept","application/json");
+head.put("Content-Type","application/json");
+// Create a query to get Customer from QuickBooks based on Account Name
+accountName = encodeUrl(accountDetails.get("Account_Name"));
+// info accountName;
+uri = baseUri + "/query?query=select * from Customer Where CompanyName = '" + accountName + "'&minorversion=65";
+// Make a GET request to QuickBooks API to get Customer
+getCustomer = invokeurl
+[
+	url :uri
+	type :GET
+	headers:head
+];
+logs.put("Get Customer from QuickBooks",getCustomer);
+// Check if Customer exists in QuickBooks, if not, create a new Customer
+if(getCustomer.get("QueryResponse").isEmpty() == true)
+{
+	logs.put("Create Customer",true);
+	createMap = Map();
+	BAddress = Map();
+	SAddress = Map();
+	emailAddressMap = Map();
+	primaryPhoneMap = Map();
+	primaryPhoneMap.put("FreeFormNumber",salesorder.get("Phone_Number"));
+	emailAddressMap.put("Address",contactDetails.get("Email"));
+	createMap.put("DisplayName",accountDetails.get("Account_Name"));
+	createMap.put("PrimaryPhone",primaryPhoneMap);
+	createMap.put("CompanyName",accountDetails.get("Account_Name"));
+	createMap.put("PrimaryEmailAddr",emailAddressMap);
+	BAddress.put("City",salesorder.get("Billing_City"));
+	BAddress.put("PostalCode",salesorder.get("Billing_Code"));
+	BAddress.put("Line1",salesorder.get("Billing_Street"));
+	BAddress.put("Country",salesorder.get("Billing_Country"));
+	SAddress.put("City",salesorder.get("Shipping_City"));
+	SAddress.put("PostalCode",salesorder.get("Shipping_Code"));
+	SAddress.put("Line1",salesorder.get("Shipping_Street"));
+	SAddress.put("Country",salesorder.get("Shipping_Country"));
+	SAddress.put("CountrySubDivisionCode",salesorder.get("Shipping_State"));
+	createMap.put("BillAddr",BAddress);
+	createMap.put("ShipAddr",SAddress);
+	createResponse = invokeurl
+	[
+		url :baseUri + "/customer?minorversion=65"
+		type :POST
+		parameters:createMap.toString()
+		headers:head
+	];
+	logs.put("Create Customer",createResponse);
+	QBCustomer = createResponse;
+}
+else
+{
+	logs.put("Update Customer",true);
+	updateMap = Map();
+	BAddress = Map();
+	SAddress = Map();
+	emailAddressMap = Map();
+	primaryPhoneMap = Map();
+	primaryPhoneMap.put("FreeFormNumber",salesorder.get("Phone_Number"));
+	emailAddressMap.put("Address",contactDetails.get("Email"));
+	updateMap.put("DisplayName",accountDetails.get("Account_Name"));
+	updateMap.put("PrimaryPhone",primaryPhoneMap);
+	updateMap.put("CompanyName",accountDetails.get("Account_Name"));
+	updateMap.put("PrimaryEmailAddr",emailAddressMap);
+	BAddress.put("City",salesorder.get("Billing_City"));
+	BAddress.put("PostalCode",salesorder.get("Billing_Code"));
+	BAddress.put("Line1",salesorder.get("Billing_Street"));
+	BAddress.put("Line1",salesorder.get("Billing_Street_2"));
+	BAddress.put("Country",salesorder.get("Billing_Country"));
+	SAddress.put("City",salesorder.get("Shipping_City"));
+	SAddress.put("PostalCode",salesorder.get("Shipping_Code"));
+	SAddress.put("Line1",salesorder.get("Shipping_Street"));
+	SAddress.put("Line2",salesorder.get("Shipping_Street_2"));
+	SAddress.put("Country",salesorder.get("Shipping_Country"));
+	SAddress.put("CountrySubDivisionCode",salesorder.get("Shipping_State"));
+	updateMap.put("ShipAddr",SAddress);
+	updateMap.put("BillAddr",BAddress);
+	updateMap.put("SyncToken",getCustomer.get("QueryResponse").get("Customer").get(0).get("SyncToken"));
+	updateMap.put("Id",getCustomer.get("QueryResponse").get("Customer").get(0).get("Id"));
+	updateResponse = invokeurl
+	[
+		url :baseUri + "/customer?minorversion=65"
+		type :POST
+		parameters:updateMap.toString()
+		headers:head
+	];
+	QBCustomer = updateResponse;
+	logs.put("Update Customer",updateResponse);
+}
