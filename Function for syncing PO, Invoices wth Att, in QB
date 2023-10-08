@@ -1,0 +1,285 @@
+name = salesorder.get("Owner").get("name");
+first_letter = "";
+if(name != null && name != "")
+{
+	first_letter = name.substring(0,1);
+}
+info first_letter;
+if(salesorder.get("Created_Time").getMonth() < 10)
+{
+	month = "0" + salesorder.get("Created_Time").getMonth();
+}
+else
+{
+	month = salesorder.get("Created_Time").getMonth();
+}
+InvoiceNumber = first_letter + salesorder.get("Order_Number") + "-" + month;
+info InvoiceNumber;
+getInvoices = invokeurl
+[
+	url :baseUri + "/query?query=select * from Invoice where DocNumber = '" + InvoiceNumber + "'&minorversion=65"
+	type :GET
+	headers:head
+];
+// info "Invoices:" + getInvoices;
+// info "QBCustomer:" + QBCustomer;
+logs.put("Invoices",getInvoices);
+if(getInvoices.get("QueryResponse").isEmpty() == true)
+{
+	info "Fa";
+	logs.put("Create Invoice",true);
+	// Create or Update Invoice in QuickBooks
+	CFMap = Map();
+	CFList = List();
+	CPOMap = Map();
+	CMMap = Map();
+	CMMap.put("value",salesorder.get("Notes").replaceAll("\n"," , "));
+	CPOMap.put("DefinitionId",1);
+	CPOMap.put("StringValue",salesorder.get("PO_Number"));
+	CPOMap.put("Type","StringType");
+	CPOMap.put("Name","Customer PO#");
+	DDMap = Map();
+	DDMap.put("DefinitionId",2);
+	DDMap.put("StringValue",salesorder.get("In_Hands"));
+	DDMap.put("Type","StringType");
+	DDMap.put("Name","Delivery Date");
+	CFList.add(CPOMap);
+	CFList.add(DDMap);
+	createInv = Map();
+	CustRef = Map();
+	CustRef.put("value",QBCustomer.get("Customer").get("Id"));
+	createInv.put("Line",LineList);
+	createInv.put("CustomerRef",CustRef);
+	createInv.put("DueDate",salesorder.get("In_Hands"));
+	createInv.put("CustomField",CFList);
+	createInv.put("CustomerMemo",CMMap);
+	createInv.put("DocNumber",InvoiceNumber);
+	logs.put("Customer Ref Map",CustRef);
+	logs.put("Create Invoice Map",createInv);
+	createInvoice = invokeurl
+	[
+		url :baseUri + "/invoice?minorversion=65"
+		type :POST
+		parameters:createInv.toString()
+		headers:head
+	];
+	InvId = createInv.get("Invoice").get("Id");
+	logs.put("Created Invoice",createInvoice);
+}
+else
+{
+	logs.put("Update Invoice ",true);
+	/////Update Invoice
+	CFMap = Map();
+	CFList = List();
+	CPOMap = Map();
+	CPOMap.put("DefinitionId",1);
+	CPOMap.put("StringValue",salesorder.get("PO_Number"));
+	CPOMap.put("Type","StringType");
+	CPOMap.put("Name","Customer PO#");
+	DDMap = Map();
+	DDMap.put("DefinitionId",2);
+	DDMap.put("StringValue",salesorder.get("In_Hands"));
+	DDMap.put("Type","StringType");
+	DDMap.put("Name","Delivery Date");
+	CFList.add(CPOMap);
+	CFList.add(DDMap);
+	createInv = Map();
+	CustRef = Map();
+	CMMap = Map();
+	CMMap.put("value",salesorder.get("Notes").replaceAll("\n"," , "));
+	CustRef.put("value",QBCustomer.get("Customer").get("Id"));
+	createInv.put("Line",LineList);
+	createInv.put("CustomerRef",CustRef);
+	createInv.put("DueDate",salesorder.get("In_Hands"));
+	createInv.put("CustomField",CFList);
+	createInv.put("CustomerMemo",CMMap);
+	createInv.put("Id",getInvoices.get("QueryResponse").get("Invoice").get(0).get("Id"));
+	createInv.put("SyncToken",getInvoices.get("QueryResponse").get("Invoice").get(0).get("SyncToken"));
+	createInv.put("DocNumber",InvoiceNumber);
+	info createInv;
+	logs.put("Customer Ref Map",CustRef);
+	logs.put("Create Invoice Map",createInv);
+	createInvoice = invokeurl
+	[
+		url :baseUri + "/invoice?minorversion=65"
+		type :POST
+		parameters:createInv.toString()
+		headers:head
+	];
+	info createInvoice;
+	InvId = createInvoice.get("Invoice").get("Id");
+	logs.put("Created Invoice",createInvoice);
+}
+//////Creating Purchase Order now 
+//Getting Vendor
+getVendor = invokeurl
+[
+	url :baseUri + "/query?query=select * from vendor where DisplayName = '" + Vendor + "'&minorversion=65"
+	type :GET
+	headers:head
+];
+logs.put("Vendor Details from QB",getVendor);
+if(getVendor.get("QueryResponse").isEmpty() == false)
+{
+	createMap = Map();
+	VendorRef = Map();
+	POEmailAddress = Map();
+	POEmailAddress.put("Address",getVendor.get("QueryResponse").get("Vendor").get(0).get("PrimaryEmailAddr").get("Address") + ",Sales@nvspromo.com");
+	GetPO = invokeurl
+	[
+		url :baseUri + "/query?query=select * from PurchaseOrder where DocNumber = '" + salesorder.get("PO_Number") + "'&minorversion=65"
+		type :GET
+		headers:head
+	];
+	// 	info GetPO;
+	PO = GetPO.get("QueryResponse");
+	info "PO" + PO;
+	logs.put("Queried PO",PO);
+	if(PO.isEmpty() == true)
+	{
+		info "In Create PO";
+		logs.put("CreatePurchaseOrder",true);
+		CFMap = Map();
+		CFList = List();
+		VendorRef.put("name",getVendor.get("QueryResponse").get("Vendor").get(0).get("DisplayName"));
+		VendorRef.put("value",getVendor.get("QueryResponse").get("Vendor").get(0).get("Id"));
+		createMap.put("TotalAmt","0.00");
+		createMap.put("VendorRef",VendorRef);
+		createMap.put("ShipAddr",SAddress);
+		createMap.put("POStatus","Open");
+		// 	createMap.put("EmailStatus","NeedToSend");
+		createMap.put("DocNumber",salesorder.get("PO_Number"));
+		createMap.put("POEmail",POEmailAddress);
+		createMap.put("DueDate",salesorder.get("In_Hands"));
+		CPOMap = Map();
+		CPOMap.put("DefinitionId",1);
+		CPOMap.put("StringValue",salesorder.get("In_Hands"));
+		CPOMap.put("Type","StringType");
+		CPOMap.put("Name","Delivery Date");
+		CFList.add(CPOMap);
+		createMap.put("Line",POLinelist);
+		createMap.put("CustomField",CFList);
+		logs.put("Create PO Map",createMap);
+		///Getting Line item Detials
+		createPO = invokeurl
+		[
+			url :baseUri + "/purchaseorder?minorversion=65"
+			type :POST
+			parameters:createMap.toString()
+			headers:head
+		];
+		logs.put("Created PO",createPO);
+		info createPO;
+		POID = createPO.get("PurchaseOrder").get("Id");
+	}
+	else
+	{
+		logs.put("UpdatePurchaseOrder",true);
+		CFMap = Map();
+		CFList = List();
+		info "FDAfa";
+		VendorRef.put("name",getVendor.get("QueryResponse").get("Vendor").get(0).get("DisplayName"));
+		VendorRef.put("value",getVendor.get("QueryResponse").get("Vendor").get(0).get("Id"));
+		createMap.put("TotalAmt","0.00");
+		createMap.put("VendorRef",VendorRef);
+		createMap.put("ShipAddr",SAddress);
+		createMap.put("POStatus","Open");
+		// 	createMap.put("EmailStatus","NeedToSend");
+		createMap.put("DocNumber",salesorder.get("PO_Number"));
+		// 	createMap.put("POEmail",POEmailAddress);
+		createMap.put("DueDate",salesorder.get("In_Hands"));
+		CPOMap = Map();
+		CPOMap.put("DefinitionId",1);
+		CPOMap.put("StringValue",salesorder.get("In_Hands"));
+		CPOMap.put("Type","StringType");
+		CPOMap.put("Name","Delivery Date");
+		CFList.add(CPOMap);
+		createMap.put("Line",POLinelist);
+		createMap.put("CustomField",CFList);
+		createMap.put("Id",PO.get("PurchaseOrder").get(0).get("Id"));
+		createMap.put("SyncToken",PO.get("PurchaseOrder").get(0).get("SyncToken"));
+		logs.put("Update PO",createMap);
+		///Getting Line item Detials
+		UpdatePO = invokeurl
+		[
+			url :baseUri + "/purchaseorder?minorversion=65"
+			type :POST
+			parameters:createMap.toString()
+			headers:head
+		];
+		logs.put("Created PO",createPO);
+		POID = UpdatePO.get("PurchaseOrder").get("Id");
+	}
+	////Get Sales Order Attachment
+	if(SOattachement.size() > 0)
+	{
+		for each  Att in SOattachement
+		{
+			info Att;
+			fileId = Att.getJSON("id");
+			response = invokeurl
+			[
+				url :"https://www.zohoapis.com/crm/v5/Sales_Orders/" + id + "/Attachments/" + fileId
+				type :GET
+				connection:"crm"
+			];
+			info response;
+			// Define the boundary string
+			boundary = "37a1965f87babd849241a530ad71e169";
+			// Define the metadata for the file
+			metadata = {"AttachableRef":{{"EntityRef":{"type":"PurchaseOrder","value":POID},"IncludeOnSend":true},{"EntityRef":{"type":"Invoice","value":InvId},"IncludeOnSend":true}},"FileName":Att.get("File_Name"),"ContentType":"application/pdf"};
+			// Define the file data (base64 encoded)
+			fileData = zoho.encryption.base64Encode(response);
+			// (Your base64 data here)
+			//  info zoho.encryption.base64Encode(response);
+			// Construct the multipart/form-data request body
+			requestBody = "";
+			// Add metadata part
+			requestBody = requestBody + "--" + boundary + "\n";
+			requestBody = requestBody + 'Content-Disposition: form-data; name="file_metadata_0"\n';
+			requestBody = requestBody + 'Content-Type: application/json; charset=UTF-8\n\n';
+			// requestBody += 'Content-Transfer-Encoding: 8bit\r\n\r\n';
+			requestBody = requestBody + metadata + "\n";
+			// Add file content part
+			requestBody = requestBody + "--" + boundary + "\n";
+			requestBody = requestBody + ('Content-Disposition: form-data; name="file_content_0"; filename="' + Att.get("File_Name")) + '"\n';
+			requestBody = requestBody + 'Content-Type: application/pdf\n';
+			requestBody = requestBody + 'Content-Transfer-Encoding: base64\n\n';
+			requestBody = requestBody + fileData + "\n";
+			// Add the final boundary
+			requestBody = requestBody + "--" + boundary + "--";
+			// requestBody=requestBody.toText();
+			info requestBody.len();
+			// Define request headers
+			headers = Map();
+			head.put("Content-Type","multipart/form-data; boundary=" + boundary);
+			// head.put("content-length",requestBody.length());
+			// Send the HTTP POST request
+			response = invokeurl
+			[
+				url :baseUri + "/upload?minorversion=65"
+				type :POST
+				parameters:requestBody.toText()
+				headers:head
+				detailed:true
+			];
+			// Handle the response as needed
+			info response;
+		}
+	}
+	///Send the PO to vendor and Owner 
+	sendTo = {getVendor.get("QueryResponse").get("Vendor").get(0).get("PrimaryEmailAddr").get("Address"),"Sales@nvspromo.com"};
+	// 		sendTo={"samaaayyy00@gmail.com","samatechnical00@gmail.com"};
+	sendPO = invokeurl
+	[
+		url :baseUri + "/purchaseorder/" + POID + "/send?sendTo=" + sendTo + "&minorversion=65"
+		type :POST
+		headers:head
+	];
+	info sendPO;
+}
+else
+{
+	logs.put("Vendor not found",true);
+}
