@@ -1,0 +1,13 @@
+string Image.Image_to_url_dynamic(string Image_String, string report_name, int Report_ID, string Field_name, string puplickey)
+{
+	img_str = Image_String;
+	img_str = img_str.replaceFirst("sharedBy",zoho.adminuser);
+	img_str = img_str.replaceFirst("appLinkName",zoho.appname);
+	img_str = img_str.replaceFirst("viewLinkName",report_name);
+	img_str = img_str.replaceFirst("fieldName",Report_ID + "/" + Field_name);
+	img_str = img_str.replaceFirst("image","image-download/" + input.puplickey + "?filepath=");
+	// 	img_str = img_str.replaceAll("creatorexport.zoho.com","creatorapp.zohopublic.com/file/");
+	img_str = img_str.replaceAll("creatorexport.zoho.com","creator.zoho.com/file/");
+	img_str = img_str.replaceFirst("<img","<img with='75px' height='75px'");
+	return img_str;
+}
