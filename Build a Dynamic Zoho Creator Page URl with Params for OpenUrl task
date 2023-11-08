@@ -1,0 +1,43 @@
+// Define the base URL
+baseURL = "#Page:All_Listings1";
+
+// Define a list of fields that you want to check
+//These fields will be your Page Params variables that you have set in your Page and now want to check if not null then add to page Parameters
+fieldsToCheck = ["Country", "State", "ListingPriceMin", "ListingPriceMax"];
+
+// Define a map  that simulates the input data with values for the fields
+inputData=Map();
+inputData.put("Country",input.Country);
+inputData.put("State",input.State);
+inputData.put("ListingPriceMin",if(input.Listing_Price_Min!=null,input.Listing_Price_Min.toLong() ,null));
+inputData.put("ListingPriceMax",if(input.Listing_Price_Max!=null,input.Listing_Price_Max.toLong(),null));
+
+// Build the dynamic URL based on the input and fields to check
+//Note : the Functions is Defined Below :)
+dynamicURL = URLs.BuildDynamicOpenUrl(baseURL, fieldsToCheck, inputData);
+
+// Open the URL in the same window
+openUrl(dynamicURL, "same window");
+
+////////////////////////////////////////////////===============================================================
+string URLs.BuildDynamicOpenUrl(String baseURL,List params , map inputData)
+{
+	// Initialize the URL with the base URL
+     dynamicURL = baseURL;
+
+    // Loop through the parameters and add them to the URL if they are not null
+    for each param in params
+    {
+		if (ifnull(inputData.get(param), null) != null)
+        {
+            // Append the parameter and its value to the URL
+            if (dynamicURL.contains("?")) {
+				dynamicURL += "&" + param + "=" + inputData.get(param);
+            } else {
+				dynamicURL += "?" + param + "=" + inputData.get(param);
+            }
+        }
+    }
+
+    return dynamicURL;
+}
