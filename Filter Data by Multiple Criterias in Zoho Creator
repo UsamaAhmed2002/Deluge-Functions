@@ -1,0 +1,25 @@
+//The Arguments in the function are basically your Form Fields or you can say your fields on which you want to filter you data
+list Filters.Filter(String Country,String State,int ListingPriceMin,int ListingPriceMax )
+{
+	 finalList = List();
+    AllListings = Listings[ID != null];
+    for each rec in AllListings
+    {
+        // Check filters and add rec to finalList if it meets the criteria
+		if ( Country.trim()==null || Country.isEmpty()|| rec.County.trim()==Country.trim())
+        {
+            if (State.trim() == null || State.isEmpty() || State.trim() == rec.State.trim())
+            {
+                if (ListingPriceMin == null  || rec.Asking_Price >= ListingPriceMin)
+                {
+                    if (ListingPriceMax == null || rec.Asking_Price <= ListingPriceMax)
+                    {
+                        finalList.add(rec.ID);
+                    }
+                }
+            }
+        }
+    }
+    
+    return finalList;
+}
