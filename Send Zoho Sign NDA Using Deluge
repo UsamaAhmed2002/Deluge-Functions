@@ -1,0 +1,65 @@
+void SIGN_NDA(int ID)
+{
+	listting = Listings[ID == input.ID];
+	Listing_Number = listting.Listing_Number;
+	Listing_Title = listting.Listing_Title;
+	listting.Potal_Email=thisapp.portal.loginUserEmailid();
+	emailID = thisapp.portal.loginUserEmailid();
+	listting.Potal_Email=thisapp.portal.loginUserEmailid();
+	contact = Contacts[Email == emailID];
+	First_Name = contact.First_Name;
+	Last_Name = contact.Last_Name;
+	Company = contact.Company;
+	Address = contact.Address;
+	City = contact.City;
+	State = contact.State;
+	Zip_Code = contact.Zip_Code;
+	Email = contact.Email;
+	Phone_Number = contact.Phone_Number;
+	end_time = zoho.currenttime;
+	strTimedate1 = end_time.toString();
+	strTimedate2 = strTimedate1.remove("-00:00");
+	strTimedate3 = strTimedate2.replaceAll("T"," ");
+	strTimedate4 = strTimedate3.toTime();
+	st_time = strTimedate4.toString("MMM-dd-yyyy") + "T" + strTimedate4.toString("HH:mm:ss") + "-00:00";
+	zohoSignTemplateID = 340236000000068107;
+	url = "https://sign.zoho.com/api/v1/templates/340236000000068107";
+	new = invokeurl
+	[
+		url :url
+		type :GET
+		connection:"sign"
+	];
+	// 	info new;
+	actionMap = Map();
+	fieldTextData = Map();
+	fieldTextData.put("Name",ifNull(contact.First_Name," ") + " " + Last_Name);
+	fieldTextData.put("Address",ifNull(contact.Address," "));
+	fieldTextData.put("Company Name",ifNull(contact.Company," "));
+	fieldTextData.put("Zip",ifNull(contact.Zip_Code," "));
+	fieldTextData.put("City",ifNull(contact.City," "));
+	fieldTextData.put("State",ifNull(contact.State," "));
+	fieldTextData.put("Phone Number",ifNull(contact.Phone_Number," "));
+	fieldTextData.put("Email",Email);
+	fieldTextData.put("Listing Title",ifNull(listting.Listing_Title," "));
+	fieldTextData.put("Listing Number",ifNull(listting.Listing_Number," "));
+	fieldTextData.put("Sign Date",st_time);
+	actionMap.put("field_data",{"field_text_data":fieldTextData});
+	eachActionMap1 = Map();
+	eachActionMap1.put("recipient_name",Last_Name);
+	eachActionMap1.put("recipient_email",Email);
+	eachActionMap1.put("action_type","SIGN");
+	eachActionMap1.put("action_id","340236000000068110");
+	eachActionMap1.put("role","Signer");
+	eachActionMap1.put("verify_recipient","false");
+	fieldList = List();
+	fieldList.add(eachActionMap1);
+	actionMap.put("actions",fieldList);
+	submitMap = Map();
+	submitMap.put("templates",actionMap);
+	parameters = Map();
+	parameters.put("is_quicksend","true");
+	parameters.put("data",submitMap);
+	response = zoho.sign.createUsingTemplate(zohoSignTemplateID,parameters,"sign");
+	info "Please check your Email to Sign the NDA";
+}
