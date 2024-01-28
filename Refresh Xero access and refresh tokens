@@ -1,0 +1,66 @@
+logs = Map();
+returnMap = Map();
+authHeaders = Map();
+xero_client_id = zoho.crm.getOrgVariable("xero_client_id");
+xero_client_secret = zoho.crm.getOrgVariable("xero_client_secret");
+xero_redirect_uri = zoho.crm.getOrgVariable("xero_redirect_uri");
+xero_refresh_token = zoho.crm.getOrgVariable("xero_refresh_token");
+/////////////////==============================================
+//Create Headers For Xero Api 
+authHeaders.put("Authorization","Basic " + zoho.encryption.base64Encode(xero_client_id + ":" + xero_client_secret));
+///////////////=======================
+//Create Params
+refreshTokenUrl = "https://identity.xero.com/connect/token";
+refreshTokenParams = Map();
+refreshTokenParams.put("grant_type","refresh_token");
+refreshTokenParams.put("refresh_token",xero_refresh_token);
+///////////////////===================
+try 
+{
+	//Call the Refresh Token End point to Create A Refresh Token
+	refreshedToken = invokeurl
+	[
+		url :refreshTokenUrl
+		type :POST
+		parameters:refreshTokenParams
+		headers:authHeaders
+		content-type:"application/x-www-form-urlencoded"
+	];
+	logs.put("Refreshed Tokens",refreshedToken);
+	///////////////////////////////==============
+	///Check if the Token is Refreshed Successfully and Update Org Variables else log the error
+	if(refreshedToken != null && refreshedToken.getJSON("access_token") != null)
+	{
+		variable1 = Map();
+		variable1.put("id","656152000000491013");
+		variable1.put("value",refreshedToken.getJSON("access_token"));
+		variable2 = Map();
+		variable2.put("id","656152000000491015");
+		variable2.put("value",refreshedToken.getJSON("refresh_token"));
+		variables_list = List();
+		variables_list.add(variable1);
+		variables_list.add(variable2);
+		param = Map();
+		param.put("variables",variables_list);
+		response = invokeurl
+		[
+			url :"https://www.zohoapis.eu/crm/v6/settings/variables"
+			type :PUT
+			parameters:param.toString()
+			connection:"crm"
+		];
+		/////////////===============================
+		returnMap.put("success",true);
+		returnMap.put("access_token",refreshedToken.getJSON("access_token"));
+	}
+	else
+	{
+		returnMap.put("success",false);
+	}
+}
+catch (e)
+{
+	logs.put("Error while Refreshing Tokens",e);
+	returnMap.put("success",false);
+}
+return returnMap;
