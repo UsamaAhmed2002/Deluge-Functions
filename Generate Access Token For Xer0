@@ -1,0 +1,60 @@
+//Copy this url [https://login.xero.com/identity/connect/authorize?response_type=code&client_id="+client_id+"&redirect_uri="+redirectUri+"&scope="+xeroConfig.scopes+"&state=123"]
+// and Paste it in the Browser and change the Variables with the Respective Values. After that you will recieve a code in the url params and then copy that code and paste it on line no 14
+logs = Map();
+//======================================================================================================================================================================
+//Get the Credentials From Crm Org Variables
+xero_client_id = zoho.crm.getOrgVariable("xero_client_id");
+xero_client_secret = zoho.crm.getOrgVariable("xero_client_secret");
+xero_redirect_uri = zoho.crm.getOrgVariable("xero_redirect_uri");
+code = zoho.crm.getOrgVariable("code");
+//======================================================================================================================================================================
+//Define the base auth url
+authUrl = "https://identity.xero.com/connect/token";
+//======================================================================================================================================================================
+//Define Headers Map
+authHeaders = Map();
+authHeaders.put("Authorization","Basic " + zoho.encryption.base64Encode(xero_client_id + ":" + xero_client_secret));
+//======================================================================================================================================================================
+//Defining Parameters
+parameters = Map();
+parameters.put("grant_type","authorization_code");
+parameters.put("code",code);
+parameters.put("redirect_uri",xero_redirect_uri);
+//======================================================================================================================================================================
+//Initialize a Post Req to Xero for auth code
+createdAccessToken = invokeurl
+[
+	url :authUrl
+	type :POST
+	parameters:parameters
+	headers:authHeaders
+	content-type:"application/x-www-form-urlencoded"
+];
+logs.put("Access Tokens",createdAccessToken);
+//======================================================================================================================================================================
+//Check if access token is generated or not and then continue
+if(createdAccessToken != null && createdAccessToken.getJSON("access_token") != null)
+{
+//======================================================================================================================================================================
+	//Update the Org var with newly generated Access Token
+	variable1 = Map();
+	variable1.put("id","656152000000491013");
+	variable1.put("value",createdAccessToken.getJSON("access_token"));
+	variable2 = Map();
+	variable2.put("id","656152000000491015");
+	variable2.put("value",createdAccessToken.getJSON("refresh_token"));
+	variables_list = List();
+	variables_list.add(variable1);
+	variables_list.add(variable2);
+	param = Map();
+	param.put("variables",variables_list);
+	response = invokeurl
+	[
+		url :"https://www.zohoapis.eu/crm/v6/settings/variables"
+		type :PUT
+		parameters:param.toString()
+		connection:"crm"
+	];
+	info logs;
+}
+return "";
