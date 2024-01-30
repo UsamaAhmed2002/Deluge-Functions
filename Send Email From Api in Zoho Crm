@@ -1,0 +1,57 @@
+if(dealSelectedProgram == "K-MBA")
+{
+	templateMap.put("id",KMBA);
+}
+else if(dealSelectedProgram == "Visiting Professor (VP)")
+{
+	templateMap.put("id",Visiting_Professor);
+}
+else if(dealSelectedProgram == "Visiting Physicians (VS)")
+{
+	templateMap.put("id",Visiting_Physicians);
+}
+else if(dealSelectedProgram == "Government Fellow (GF)")
+{
+	templateMap.put("id",Government_Fellow);
+}
+else if(dealSelectedProgram == "Visiting Fellow (VF)")
+{
+	templateMap.put("id",Visiting_Fellow);
+}
+else if(dealSelectedProgram == "UN Advanced Training (UNAT)")
+{
+	templateMap.put("id",Un_Advanced_Training);
+}
+else if(dealSelectedProgram == "UN Training (UNT)")
+{
+	templateMap.put("id",Un_Training);
+}
+else if(dealSelectedProgram == "UN Online (UNO)")
+{
+	templateMap.put("id",Un_Online);
+}
+finallist = List();
+frommp = Map();
+frommp.put("email",zoho.loginuserid);
+mp = Map();
+mp.put("from",frommp);
+tomaplist = List();
+tomap = Map();
+tomap.put("email",contact.getJSON("Email"));
+tomaplist.add(tomap);
+mp.put("to",tomaplist);
+//..........Get Template Data............
+mp.put("template",templateMap);
+finallist.add(mp);
+finalmap = Map();
+finalmap.put("data",finallist);
+logs.put("Send Mail Map",finalmap);
+//////////////////////////////////////////////////=================================================
+sendMail = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v6/Deals/" + id + "/actions/send_mail"
+	type :POST
+	parameters:finalmap.toString()
+	connection:"email_send"
+];
+logs.put("sent Mail",sendMail);
