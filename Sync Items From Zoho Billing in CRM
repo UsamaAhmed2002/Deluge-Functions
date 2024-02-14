@@ -1,0 +1,62 @@
+
+logs = Map();
+itemID = item.get("item_id");
+organizationID = organization.get("organization_id");
+logs.put("item",item);
+crmBaseUrl = "https://www.zohoapis.eu/crm/v6/";
+//================
+//Create Data map
+mainDataMap = Map();
+dataList = List();
+dataMap = Map();
+dataMap.put("Product_Code",item.getJSON("sku"));
+dataMap.put("Product_Name",item.getJSON("name"));
+dataMap.put("Unit_Price",item.getJSON("rate"));
+dataMap.put("Usage_Unit",item.getJSON("unit"));
+dataMap.put("billingProductID",itemID);
+dataMap.put("Product_Category",item.getJSON("custom_field_hash").getJSON("cf_item_type"));
+dataList.add(dataMap);
+mainDataMap.put("data",dataList);
+logs.put("Main Data Map",mainDataMap);
+//==========================
+//Search Item in Crm First
+criteria = "(billingProductID:equals:" + itemID + ")";
+parametersMap = Map();
+parametersMap.put("search",criteria);
+searchedItemInCrm = invokeurl
+[
+	url :crmBaseUrl + "Products/search?criteria=" + criteria
+	type :GET
+	connection:"zohocrm"
+];
+logs.put("crm Searched Item",searchedItemInCrm);
+//check if Item is found in Crm then Update Else Create Item
+if(searchedItemInCrm != null && searchedItemInCrm != "" && searchedItemInCrm.getJSON("data") != null)
+{
+	crmID = searchedItemInCrm.getJSON("data").get(0).getJSON("id");
+	dataList.clear();
+	mainDataMap.clear();
+	dataMap.put("id",crmID);
+	dataList.add(dataMap);
+	mainDataMap.put("data",dataList);
+	updatedItem = invokeurl
+	[
+		url :crmBaseUrl + "Products/" + crmID
+		type :PUT
+		parameters:mainDataMap.toString()
+		connection:"zohocrm"
+	];
+	logs.put("Updated Item in Crm",updatedItem);
+}
+else if(searchedItemInCrm != null)
+{
+	createdItem = invokeurl
+	[
+		url :crmBaseUrl + "Products"
+		type :POST
+		parameters:mainDataMap.toString()
+		connection:"zohocrm"
+	];
+	logs.put("created Item",createdItem);
+}
+info logs;
