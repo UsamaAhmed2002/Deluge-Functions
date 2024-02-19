@@ -1,0 +1,924 @@
+<%{
+	if(isNumber(input.prop_id))
+	{
+		prop_obj = Proposal[ID == input.prop_id.toLong()];
+		if(prop_obj.count() > 0)
+		{
+			Project = Project[ID == prop_obj.Project_Name];
+			Notes = Proposal_Notes[Proposal == prop_obj.ID];
+			AllProps = Proposal[Project_Name == prop_obj.Project_Name && Estimate_Worksheet != prop_obj.Estimate_Worksheet].count();
+			pdfirl = zoho.appuri + "pdf/Proposal_Page/?prop_id=" + prop_obj.ID + "&print=true&isc5page=true";
+			prntUrl = zoho.appuri + "print/Proposal_Page/?prop_id=" + prop_obj.ID + "&print=true&isc5page=true";
+			%>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <body>	
+    <div class="mt-2 text-center">
+      <div class="row">
+        <div style="width: 40%;text-align:left;margin-left:5px;">
+			 <a class="btn btn-warning" style="" href="#Page:Proposal_summary?prop_id=<%=prop_obj.ID%>&zc_LoadIn=dialog&zc_Header=false">
+					View Summary
+			</a>
+		</div>
+        <div class="text-start p-0" style="width: 5%;">
+           <div href="#click" class="menu">
+        <h2 class="menu-title menu-title_2nd">Raise</h2>
+<%
+			msgRaise10 = "Do you want to Raise this proposal by 10%?";
+			msgRaise10 = encodeUrl(msgRaise10);
+			msgRaise20 = "Do you want to Raise this Proposal by 20%?";
+			msgRaise20 = encodeUrl(msgRaise20);
+			%>
+<ul class="menu-dropdown">
+          <li><a class="dropdown-item"
+            href="#Form:Confirm?Proposal=<%=prop_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&plain=<%=msgRaise10%>&Identifier=proposalraise10&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">Raise 10%</a></li>
+        <li><a class="dropdown-item"
+            href="#Form:Confirm?Proposal=<%=prop_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&plain=<%=msgRaise20%>&Identifier=proposalraise20&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">Raise
+            20%</a></li>
+        </ul>
+      </div>
+        </div>
+        <div class="col-1 p-0" style="width: 9%;margin-left:24px">
+          <div>
+		   <div href="#click" class="menu_1">
+        <a style="color:white;" href="#Form:Proposal_Notes?Proposal=<%=prop_obj.ID%>&zc_LoadIn=dialog&zc_Header=false">
+		<h2 class="menu-title_1 menu-title_2nd">
+		Add Notes
+		</h2>
+		</a>
+      </div>
+          </div>
+        </div>
+		
+		 <div style="width: 15%;text-align: end;" class="p-0">
+		 <a href="<%=zoho.appuri%>#Form:Proposal?recLinkID=<%=prop_obj.ID%>&viewLinkName=All_Proposals_Report&zc_LoadIn=dialog&ShowFields=TermsAndConditions&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>" class="btn btn-warning" >Terms And Conditions</a>
+<%
+			if(Notes.contains("No Matching"))
+			{
+				%>
+<!--<a href="<%=zoho.appuri%>#Form:Proposal_Notes?zc_LoadIn=dialog&ShowField=TermsAndConditions&Proposal=<%=prop_obj.ID%>&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>" class="btn btn-warning" >Terms And Conditions</a>-->
+<%
+			}
+			else
+			{
+				%>
+<!--<a href="<%=zoho.appuri%>#Form:Proposal_Notes?zc_LoadIn=dialog&recLinkID=<%=Notes.ID%>&viewLinkName=Proposal_Notes_Report&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>" class="btn btn-warning" >Terms And Conditions</a>-->
+<%
+			}
+			%>
+</div> 
+        <div style="width: 28%;text-align: end;"><a href="<%=prntUrl%>" target="_blank" class="btn btn-warning" >Print </a></div> 
+      </div> 
+
+</div>
+    </div>
+    <div class="table-responsive">
+      <table style="width:100%;">
+        <thead style="display: table-header-group;">
+          <tr>
+            <th>
+              <div class="row px-4 mt-3">
+                <div class="col-6"><img style="width: 220px; " class="media-object img-responsive"
+                    src="https://creatorapp.zohopublic.com/file/cooperdevelopment/clean/Company_Logo_Report/1556703000026947013/Image/image-download/9QbE6Vm9HAyWTYTvga1aVdNQ5ajYRBVM5SVyytyHPtWDtfyUPVxXCpnkAgV5kbjmjGNYzAEae0rvg1sAdESHGrA4DJ3Zj3z8ZKre?filepath=/1598248765758_Cooper_Build_full_color.png">
+
+                  <div class="row mt-3 mb-2" style="font-size: 11px;">
+                    <div class="col-2 size pad">PROJECT</div>
+                    <div class="col-1 text-end pad">:</div>
+                    <div class="col-9 fw-bold size_1 pad">
+                      <%=ifnull(prop_obj.Project_Name.Job_Name,"")%>
+                    </div>
+
+                    <div class="col-2 size pad">SUBJECT</div>
+                    <div class="col-1 text-end pad">:</div>
+                    <div class="col-9 fw-bold size_1 pad">
+                      <%=ifnull(prop_obj.Proposal_Name,"")%>
+                    </div>
+
+                    <div class="col-2 size pad">LOCATION</div>
+                    <div class="col-1 text-end pad">:</div>
+                    <div class="col-9 fw-bold size_1 pad">
+                      <%=ifnull(prop_obj.Project_Name.Address,"")%>
+                    </div>
+
+                    <div class="col-2 mt-3 size pad">ATTENTION</div>
+                    <div class="col-1 text-end mt-3 pad">:</div>
+                    <div class="col-9 mt-3 fw-bold size_1 pad"><%=ifnull(prop_obj.Client_Name.Contact_Name,"")%></div>
+
+                    <div class="col-2 size pad">COMPANY</div>
+                    <div class="col-1 text-end pad">:</div>
+                    <div class="col-9 fw-bold size_1 pad">
+                      <%=ifnull(prop_obj.Client_Name.Company_Name,"")%>
+                    </div>
+
+                    <div class="col-2 size pad">ADDRESS</div>
+                    <div class="col-1 text-end pad">:</div>
+                    <div class="col-9 fw-bold size_1 pad">
+                      <%=ifnull(prop_obj.Prepared_By.Mailing_Address,"")%>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-6 align">
+                  <div class="pad pad_1">276 Fifth Ave Ste 704 PMB 170</div>
+                  <div class="pad pad_1">New York, NY 10001</div>
+                  <div class="pad pad_1">T: +1 (631) 213 1170</div>
+                  <div class="pad pad_1">E :info@cooperbuild.com</div>
+                  <div class="pad pad_1">W : www.cooperbuild.com</div>
+
+                  <div class="row mt-3 mb-5" style="padding: 0px 9px;">
+                    <div class="col-md-4 col-sm-0"></div>
+                    <div class="col-md-4 col-sm-6 col-6 pad">PROPOSAL REFERENCE</div>
+                    <div class="col-md-1 col-sm-1 col-1 pad">:</div>
+                    <div class="col-md-3 col-sm-5 col-5 fw-bold pad">
+                      <%=ifnull(prop_obj.Proposal_Number,"")%>
+                    </div>
+                   
+
+                    <div class="col-md-4 col-sm-0 pad"></div>
+                    <div class="col-md-4 col-sm-6 col-6 pad">DATE</div>
+                    <div class="col-md-1 col-sm-1 col-1 pad">:</div>
+                    <div class="col-md-3 fw-bold col-sm-5 col-5 pad">
+                      <%=ifnull(prop_obj.Date_field,"")%>
+                    </div>
+
+                  </div>
+                </div>
+
+
+              </div>
+            </th>
+
+
+          </tr>
+        </thead>
+
+        <tbody class="report-content">
+          <tr>
+            <td class="report-content-cell px-4">
+              <div class="table-responsive" style="font-size: 11px;">
+                <table class="table" style="border: 1px solid grey;">
+                  <thead style="background: #395c8c;color: #fff;" class="report-header">
+                    <tr>
+                      <th style="width: 15%;" class="fw-bold text-center">Deliverable Name</th>
+                      <th style="width: 36%;" class="fw-bold text-center">Description</th>
+                      <th class="text-center fw-bold" style="width: 6%;">Quantity</th>
+                      <th class="text-center fw-bold" style="width: 11%;">Unit</th>
+                      <th class="text-center fw-bold" style="width: 8%;">Cooper Rate</th>
+                      <th class="text-center fw-bold" style="width: 8%;">Client Rate</th>
+                      <th class="text-center fw-bold" style="width: 8%;">Cooper Total</th>
+                      <th class="text-center fw-bold" style="width: 8%;">Client Total</th>
+                    </tr>
+                  </thead>
+                  <tfoot class="report-footer">
+                    <tr>
+                      <td colspan="6" class="p-0">
+                        <div class="mt-0">
+                        </div>
+                      </td>
+                    </tr>
+                  </tfoot>
+                  <tbody>
+<%
+			prop_deliver_cls_list = Proposal_Line_Items[Proposal == prop_obj.ID].distinct(Deliverable_Class);
+			ClientTotal = Proposal_Line_Items[Proposal == prop_obj.ID].sum(Client_Total);
+			for each  prop_cls_id in prop_deliver_cls_list.sort(true)
+			{
+				deliverable_class_obj = Deliverable_Class[ID == prop_cls_id];
+				%>
+<tr>
+                        <td colspan="6" class="fw-bold">
+                          <%=ifnull(deliverable_class_obj.Deliverable_Class_Name,"")%>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td colspan="8">
+                          <div class="col-md-12 p-0">
+                            <div class="border-0 tableCard">
+                              <details style="color:#ebcbef3b;">
+                                <summary class="mb-0 bg-pink-500 text-white fs-2">
+                                  <div class="radius text-center fs-3 align mb-1">
+                                    <div class="d-flex flex-row text-center mt-2 p-2"
+                                      style="font-size: 10.5px;margin-top: -36px !important;color: #000;">
+                                      <div style="width:15%; text-align:center;" class="fw-bold"> </div>
+                                      <div style="width:40%;text-align:start;" class="fw-bold">
+                                        <%=ifnull(deliverable_class_obj.Deliverable_Class_Name,"")%>
+                                          <a
+                                            href="#Form:Proposal?recLinkID=<%=prop_obj.ID%>&Show=true&zc_LoadIn=dialog&viewLinkName=All_Proposals_Report"><svg
+                                              xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                              fill="currentColor" class="bi bi-edit" viewBox="0 0 16 16">
+                                              <path
+                                                d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                            </svg></a>
+                                      </div>
+                                      <div style="width:6%;text-align:center;"></div>
+                                      <div style="width:11%;text-align:center;"></div>
+                                      <div style="width:8%;text-align:center;"></div>
+                                      <div style="width:8%;"></div>
+                                    </div>
+                                  </div>
+                                </summary>
+<%
+				deliverable_tot = 0.0;
+				for each  prop_item_obj in Proposal_Line_Items[Proposal == prop_obj.ID && Deliverable_Class == prop_cls_id]
+				{
+					deliverable_tot = deliverable_tot + ifnull(prop_item_obj.Client_Total,0.0);
+					%>
+<div class="card-body row">
+                                    <div class="text-end" style="color: #000;">
+                                      <div class="col-md-12 col-12 p-0">
+                                        <div class="d-flex flex-row text-end mt-2 p-2"
+                                          style="font-size: 10.5px;margin-top: -32px !important;margin-left: -29px;width: 105%;">
+                                          <div style="width:15%; text-align:center;" class="fw-bold">
+                                            <%=ifnull(prop_item_obj.Deliverable_Template.Name,0.0)%>
+                                          </div>
+                                          <div style="width:35%;text-align:start;padding: 0px 12px" class="fw-bold"><a
+                                              href="#Form:Estimate_Converter?Proposal_Line_Items_ID=<%=prop_item_obj.ID%>&Proposal=<%=prop_obj.ID%>&Identifier=proposaldescription&zc_LoadIn=dialog&zc_Header=false">
+                                              <%=ifnull(prop_item_obj.Description,0.0)%>
+                                            </a></div>
+                                          <div style="width:6%;text-align:end;">
+                                            <%=ifnull(prop_item_obj.Qty,0.0)%>
+                                          </div>
+                                          <div style="width:11%;text-align:end;">
+                                            <%=ifnull(prop_item_obj.Unit,0.0)%>
+                                          </div>
+                                          <div style="width:9%;text-align:end;padding: 0px 20px;">
+                                            <%=ifnull(prop_item_obj.Rate,0.0)%>
+                                          </div>
+										  <div style="width:9%;text-align:end;padding: 0px 20px;">
+                                          <a href="<%=zoho.appuri%>#Form:Proposal_Line_Items?zc_LoadIn=dialog&recLinkID=<%=prop_item_obj.ID%>&viewLinkName=All_Proposal_Line_Items&Show=ClientRate&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">  <%=ifnull(prop_item_obj.Client_Rate,0.0)%></a>
+                                          </div>
+                                          <div style="width:8%;padding: 0px 20px;">
+                                            <%=ifnull(prop_item_obj.Sub_Total,0.0)%>
+                                          </div>
+<%
+					if(prop_item_obj.Sub_Total > prop_item_obj.Client_Total)
+					{
+						%>
+<div style="width:8%;padding: 0px 20px;color:red;">
+                                           			 <%=ifnull(prop_item_obj.Client_Total,0.0)%>
+                                         		 </div>
+<%
+					}
+					else
+					{
+						%>
+<div style="width:8%;padding: 0px 20px;color:green;">
+                                          		  <%=ifnull(prop_item_obj.Client_Total,0.0)%>
+                                          		</div>
+<%
+					}
+					%>
+</div>
+                                      </div>
+                                    </div>
+                                  </div>
+<%
+				}
+				%>
+</details>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                      <tr class="backcolor">
+                        <td></td>
+                        <td class="text-center fw-bold">Subtotal:
+                          <%=ifnull(deliverable_class_obj.Deliverable_Class_Name,"")%>
+                        </td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+						<td class="text-end fw-bold">
+						<%=ifnull(deliverable_tot,0.0)%>
+						</td>
+                      </tr>
+<%
+			}
+			%>
+<tr>
+                          <td colspan="4"></td>
+                          <td >
+                          </td>
+						  <td></td>
+						  <td></td>
+						  <td class="fw-bold text-end"> <%=thisapp.Estimate.str_to_comma(ifnull(ClientTotal,0.0))%></td>
+                        </tr>
+                        <tr>
+                          <td colspan="4">Insurance</td>
+                          <td class="text-end">
+						   <a href="<%=zoho.appuri%>#Form:Proposal?zc_LoadIn=dialog&recLinkID=<%=prop_obj.ID%>&viewLinkName=All_Proposals_Report&ShowFields=Insurance&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">  <%=ifnull(prop_obj.Insurance,0.0) + " %"%></a>
+                          </td>
+						  <td></td>
+						  <td></td>
+                          <td class="text-end">
+                            <%=thisapp.Estimate.str_to_comma(ifnull(prop_obj.Insurance_Amount,0.0))%>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="4">General Conditions</td>
+                          <td class="text-end">
+                           <a href="<%=zoho.appuri%>#Form:Proposal?zc_LoadIn=dialog&recLinkID=<%=prop_obj.ID%>&viewLinkName=All_Proposals_Report&ShowFields=General_Conditions&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">  <%=ifnull(prop_obj.General_Conditions,0.0) + " %"%></a>
+                          </td>
+						  <td></td>
+						  <td></td>
+                          <td class="text-end">
+                            <%=thisapp.Estimate.str_to_comma(ifnull(prop_obj.General_Conditions_Amount,0.0))%>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td colspan="4">General Contractor Mark-up</td>
+                          <td class="text-end">
+                           <a href="<%=zoho.appuri%>#Form:Proposal?zc_LoadIn=dialog&recLinkID=<%=prop_obj.ID%>&viewLinkName=All_Proposals_Report&ShowFields=General_Contractor_Markup&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">  <%=ifnull(prop_obj.General_Contractor_Markup,0.0) + " %"%></a>
+                          </td>
+						  <td></td>
+						  <td></td>
+                          <td class="text-end">
+                            <%=thisapp.Estimate.str_to_comma(ifnull(prop_obj.General_Contractor_Markup_Amount,0.0))%>
+                          </td>
+                        </tr>
+<%
+			Amnt = thisapp.Estimate.str_to_comma(ifnull(prop_obj.NYS_Sales_Tax_8_875_Amount,0.0));
+			if(prop_obj.NYS_Sales_Tax_8_875_Amount != 0.0)
+			{
+				%>
+<tr>
+                          <td colspan="4">NYS Sales Tax </td>
+                          <td class="text-end">
+                            <%=ifnull(prop_obj.NYS_Sales_Tax,0.0) + " %"%>
+                          </td>
+						  <td></td>
+						  <td></td>
+                          <td class="text-end">
+                            <%=thisapp.Estimate.str_to_comma(ifnull(prop_obj.NYS_Sales_Tax_8_875_Amount,0.0))%>
+                          </td>
+                        </tr>
+<%
+			}
+			%>
+<tr class="backcolor_1" style="height:20px;">
+                          <td colspan="6"></td>
+                        </tr>
+                        <tr>
+                          <td colspan="4" class="fw-bold">GRAND TOTAL</td>
+                          <td></td>
+						  <td></td>
+						  <td></td>
+                          <td class="fw-bold text-end">
+                            <%=thisapp.Estimate.str_to_comma(ifnull(prop_obj.Grand_Total,0.0))%>
+                          </td>
+                        </tr>
+
+
+                  </tbody>
+                </table>
+
+                <div class="fw-bold mb-3 mt-3"><u>Exclusions and Qualifications :</u></div>
+<%
+			for each  note_list in Proposal_Notes[Proposal == prop_obj.ID]
+			{
+				%>
+<div class="fw-bold my-3">
+                    <%=ifnull(note_list.Note_Title,"")%>
+                  </div>
+				  <div style="margin-left:20px">
+				  <a href="<%=zoho.appuri%>#Form:Proposal_Notes?zc_LoadIn=dialog&recLinkID=<%=note_list.ID%>&viewLinkName=Proposal_Notes_Report&zc_Header=false&zc_NextUrl=#Page:Proposal_Template_Page?prop_id=<%=prop_obj.ID%>">   <%=ifnull(note_list.Note,"")%></a>
+                    
+                  </div>
+<%
+			}
+			for each  TC in prop_obj.Terms_and_Conditions
+			{
+				%>
+<div style="margin-left:20px">
+                     <%=ifnull(TC.Description,"")%>
+                  </div>
+<%
+			}
+			%>
+</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </body>
+
+  <style>
+    table.report-container {
+      page-break-after: always;
+      width: 100%;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    thead.report-header {
+      display: table-header-group;
+      width: 100%;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    tfoot.report-footer {
+      display: table-footer-group;
+      width: 100%;
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    @media (max-width:1200px) {
+      .wid {
+        width: 1140px !important;
+        margin-top: -2px;
+        margin-left: -20px !important;
+        height: 165px !important;
+
+      }
+    }
+
+    @media (max-width:900px) {
+      .size {
+        width: 86px !important;
+      }
+
+      .size_1 {
+        width: 250px !important;
+      }
+
+      .pad_1 {
+        padding: 0px 5px 0px 0px !important;
+      }
+    }
+
+    .card {
+      border: 1px solid gray;
+      padding: 8px;
+      height: 90px;
+    }
+
+    .pad {
+      padding: 3px 10px !important;
+    }
+
+    .table tbody tr td {
+      padding: 3px 5px;
+    }
+
+    .cenfont {
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .endfont {
+      text-align: end;
+      font-weight: 800;
+    }
+
+    .endfont1 {
+      text-align: end;
+      padding: 0px 5px;
+    }
+
+    .bcend {
+      background-color: lightgray;
+      text-align: end;
+      font-weight: 800;
+    }
+
+    .tofont {
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    @page: first {
+      margin: -4px;
+    }
+
+    @page: last {
+      margin: 5cm;
+    }
+
+    @page: left {
+      margin: 0cm;
+    }
+
+    @page: right {
+      margin: 0cm;
+    }
+
+    .zc-pb-tile-card {
+      overflow: hidden;
+    }
+
+    .btn-primary {
+      background: green;
+      text-shadow: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    .zc-custom-font {
+      font-family: 'Poppins', sans-serif !important;
+    }
+
+    .align {
+      text-align: end;
+      font-size: 11px;
+    }
+
+    .table>:not(caption)>*>* {
+      border-bottom-width: 0px;
+      border-right: 1px solid #c4bcbc;
+      //     border-left: 1px solid #c4bcbc;
+    }
+
+    .pad_1 {
+      color: #0883b6;
+    }
+
+    .backcolor {
+      background: #CFE2F3;
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
+
+    .backcolor_1 {
+      border-top: 1px solid black;
+      border-bottom: 1px solid black;
+    }
+
+    
+
+ /* Dropdown */
+	.dropdown-item {
+    padding: 0px 5px;
+	}
+   .menu {
+ display: block;
+ position: relative;
+ cursor: pointer;
+}
+
+.menu-title {
+ display: block;
+ width: 69px;
+ height: 23px;
+ padding: 6px 0 0;
+ background: #395c8c;
+ text-align: center;
+ color: #ffffff;
+ font-weight: bold;
+ text-transform: uppercase;
+ transition: 0.3s background-color;
+ font-size: 11px;
+}
+
+.menu-title:before {
+ content: "";
+ display: block;
+ height: 0;
+ border-top: 5px solid #395c8c;
+ border-left: 35px solid transparent;
+ border-right: 35px solid transparent;
+ border-bottom: 0 solid #dddddd;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ z-index: 101;
+ transition: 0.2s 0.2s border-top ease-out, 0.3s border-top-color;
+}
+
+.menu-title:hover {
+ background: #8db842;
+}
+
+.menu-title:hover:before {
+ border-top-color: #8db842;
+}
+
+.menu:hover > .menu-title:before {
+ border-top-width: 0;
+ transition: 0.2s border-top-width ease-in, 0.3s border-top-color;
+}
+
+.menu-title:after {
+ content: "";
+ display: block;
+ height: 0;
+ border-left: 35px solid transparent;
+ border-right: 35px solid transparent;
+ border-bottom: 0 solid #ebebeb;
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ z-index: 101;
+ transition: 0.2s border-bottom ease-in;
+}
+
+.menu:hover > .menu-title:after {
+ border-bottom-width: 5px;
+ transition: 0.2s 0.2s border-bottom-width ease-out;
+}
+
+
+.menu-dropdown {
+ min-width: 69px;
+ padding: 5px 0;
+ position: absolute;
+ background: #ebebeb;
+ z-index: 100;
+ transition: 0.5s padding, 0.5s background;
+}
+
+.menu-dropdown:after {
+ content: "";
+ display: block;
+ height: 0;
+ border-top: 5px solid #ebebeb;
+ border-left: 35px solid transparent;
+ border-right: 35px solid transparent;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ z-index: 101;
+ transition: 0.5s border-top;
+}
+
+.menu:not(:hover) > .menu-dropdown {
+ padding: 4px 0;
+ background: #dddddd;
+ z-index: 99;
+ width: 69px;
+}
+
+.menu:not(:hover) > .menu-dropdown:after {
+ border-top-color: #dddddd;
+}
+
+.menu:not(:hover) > .menu-title:after {
+ border-bottom-color: #dddddd;
+}
+
+.menu-dropdown > * {
+ overflow: hidden;
+ height: 30px;
+ padding: 5px 5px;
+ background: rgba(0, 0, 0, 0);
+ white-space: nowrap;
+ transition: 0.5s height cubic-bezier(0.73, 0.32, 0.34, 1.5), 0.5s padding cubic-bezier(0.73, 0.32, 0.34, 1.5), 0.5s margin cubic-bezier(0.73, 0.32, 0.34, 1.5), 0.5s 0.2s color, 0.2s background-color;
+ width:69px;
+ font-size:11px;
+ 
+}
+
+.menu:not(:hover) > .menu-dropdown > * {
+ visibility: hidden;
+ height: 0;
+ padding-top: 0;
+ padding-bottom: 0;
+ margin: 0;
+ color: rgba(25, 25, 25, 0);
+ transition: 0.5s 0.1s height, 0.5s 0.1s padding, 0.5s 0.1s margin, 0.3s color, 0.6s visibility;
+ z-index: 99;
+}
+h2{
+  margin-bottom: 0;
+}
+/* Dropdown_1 */
+	.dropdown-item_1 {
+    padding: 0px 5px;
+	}
+   .menu_1 {
+ display: block;
+ position: relative;
+ cursor: pointer;
+}
+
+.menu-title_1 {
+ display: block;
+ width: 69px;
+ height: 23px;
+ padding: 6px 0 0;
+ background: #395c8c;
+ text-align: center;
+ color: #ffffff;
+ font-weight: bold;
+ text-transform: uppercase;
+//  transition: 0.3s background-color;
+ font-size: 11px;
+}
+
+.menu-title_1:before {
+ content: "";
+ display: block;
+ height: 0;
+ border-top: 5px solid #395c8c;
+ border-left: 35px solid transparent;
+ border-right: 35px solid transparent;
+ border-bottom: 0 solid #dddddd;
+ position: absolute;
+ top: 100%;
+ left: 0;
+ z-index: 101;
+//  transition: 0.2s 0.2s border-top ease-out, 0.3s border-top-color;
+}
+
+.menu-title_1:hover {
+ background: #ebebeb;
+}
+
+.menu-title_1:hover:before {
+ border-top-color: #ebebeb;
+}
+
+.menu-title_1:after {
+ content: "";
+ display: block;
+ height: 0;
+ border-left: 0px solid transparent;
+ border-right: 0px solid transparent;
+ border-bottom: 0 solid #ebebeb;
+ position: absolute;
+ bottom: 0;
+ left: 0;
+ z-index: 101;
+//  transition: 0.2s border-bottom ease-in;
+}
+
+.menu_1:hover > .menu-title_1:after {
+ border-bottom-width: 5px;
+//  transition: 0.2s 0.2s border-bottom-width ease-out;
+}
+
+
+.menu-dropdown_1 {
+ min-width: 69px;
+ padding: 5px 0;
+ position: absolute;
+ background: #ebebeb;
+ z-index: 100;
+//  transition: 0.5s padding, 0.5s background;
+     height: 0px;
+}
+
+.menu-dropdown_1:after {
+ content: "";
+ display: block;
+ height: 0;
+ border-top: 5px solid #ebebeb;
+ border-left: 35px solid transparent;
+ border-right: 35px solid transparent;
+ position: absolute;
+ top: 100%;
+ left: 0;
+//  z-index: 101;
+//  transition: 0.5s border-top;
+}
+
+.menu_1:not(:hover) > .menu-dropdown {
+//  padding: 4px 0;
+//  background: #dddddd;
+//  z-index: 99;
+//  width: 69px;
+}
+
+// .menu_1:not(:hover) > .menu-dropdown:after {
+//  border-top-color: #dddddd;
+// }
+
+.menu_1:not(:hover) > .menu-title:after {
+ border-bottom-color: #dddddd;
+}
+
+.menu-dropdown_1 > * {
+ overflow: hidden;
+ height: 30px;
+ padding: 5px 5px;
+ background: rgba(0, 0, 0, 0);
+ white-space: nowrap;
+ width:69px;
+ font-size:11px;
+ 
+}
+
+h2{
+  margin-bottom: 0;
+}
+    .btn-primary:hover {
+      color: #2a6496;
+      background-color: #eee;
+      border-color: #ddd;
+    }
+
+    .card {
+      width: 350px;
+      height: 150px;
+      border-radius: 0px;
+
+    }
+
+    .card1 {
+      width: 600px;
+      height: 300px;
+      background: #e5e6e4;
+      border-radius: 5px;
+      color: black;
+    }
+
+
+
+    .LeadsCard {
+      box-shadow: 0 0 25px -5px #9e9c9e;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+
+
+    }
+
+    .LeadsCard:hover,
+    .LeadsCard:focus {
+      box-shadow: 0 8px 6px -6px black;
+      -webkit-transition: all ease-in-out 450ms;
+      transform: scale(1.05);
+      box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.4);
+      z-index: 2;
+      cursor: pointer;
+
+    }
+
+    .LeadsCard:not(:hover) {
+      -webkit-transition: all ease-in-out 300ms;
+    }
+
+    /* colop */
+
+    details>summary {
+
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none
+    }
+
+    summary::before {
+      content: '▼ ';
+      font-size: 24px;
+      color: black;
+    }
+
+    details[open] summary:before {
+      content: "►";
+      font-size: 24px;
+      color: black;
+    }
+
+    a{
+		text-decoration: none !important;
+	}
+	.table-responsive {
+    overflow-x: hidden;
+}
+.menu-title:hover {
+    color: #2a6496;
+    background-color: #eee;
+    border-color: #ddd;
+}
+a:hover {
+    color: #395c8c !important;
+}
+.btn-warning {
+    color: #fff;
+    background-color: #395c8c;
+    border-color: #395c8c;
+    text-shadow: none;
+    padding: 0px 15px;
+	font-size: 14px;
+}
+.btn-warning:hover {
+    color: #fff !important;
+    background-color: #1b4e95;
+    border-color: #274d81;
+    font-size: 14px;
+}
+.popupbox{
+	width:100% !important;
+}
+  </style>
+<%
+		}
+		else
+		{
+			%>
+<h4>Please pass some Arguments...!
+<%
+		}
+	}
+	else
+	{
+		%>
+<h4>Please pass some Arguments...! </h4>
+<%
+	}
+
+}%>
