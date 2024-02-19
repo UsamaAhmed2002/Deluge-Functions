@@ -1,0 +1,1017 @@
+<%{
+	if(isNumber(input.estimate_new))
+	{
+		add_esti_work_obj = Add_Estimate_Worksheet[Auto_No == input.estimate_new.toLong()];
+		if(add_esti_work_obj.count() > 0)
+		{
+			Estconverted = add_esti_work_obj.EstimateConvertedToProject;
+			///////Gathering Subcontractors Data
+			SubContractor = Subcontractor[Estimate_No.ID == add_esti_work_obj.ID && Added == true && Total_Amount != 0];
+			info SubContractor;
+			SubContractorName = ifNull(SubContractor.Subcontractor_Name.Contact_Name," ");
+			////////////////////////=========================================================
+			edit_url = "#Form:Add_Estimate_Worksheet?zc_LoadIn=dialog&recLinkID=" + add_esti_work_obj.ID + "&viewLinkName=All_Estimate_Worksheets&zc_NextUrl=#Page:All_Estimate_New?estimate_new=" + input.estimate_new;
+			print_url = "https://creatorapp.zoho.com/" + zoho.adminuser + "/" + zoho.appname + "/print/All_Estimate_New?estimate_new=" + input.estimate_new.tolong() + "&print=true";
+			est_deliverable_ids = Estimate_Deliverable[Add_Estimate_Worksheet == add_esti_work_obj.ID].ID.getAll();
+			%>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <div class="container overlay">
+    <div class="card ParentCard">
+      <div class="card-header parent_card_header">
+        <div class="row">
+          <div class="col-md-12 col-12">
+            <h4 class="page_title text-center mb-0 Title text-uppercase fw-bold">Estimate worksheet</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3">
+        <div class="tabs">
+            <div class="tabby-tab">
+                 <!--<input type="radio" id="tab-1" name="tabby-tabs" <%=if(input.tab == "sum","checked","")%> >-->
+				<input type="radio" id="tab-1" name="tabby-tabs">
+                <label for="tab-1">Summary</label>
+                <div class="tabby-content">
+                    <div class="row mt-2">
+                        <div style="border: none;" class="panel panel-primary">
+                          <div style="padding: 0; background-color: #fff; border-bottom: 0; color: black;"
+                            class="panel-heading">
+                            <div style="margin-top: 15px; margin-bottom: 15px;" class="row">
+                              <div class="col-xs-12">
+                                <div class="col-xs-2">
+                                  <div class="media">
+                                    <img
+                                      src="https://creatorapp.zohopublic.com/file/cooperdevelopment/clean/Company_Logo_Report/1556703000026947013/Image/image-download/9QbE6Vm9HAyWTYTvga1aVdNQ5ajYRBVM5SVyytyHPtWDtfyUPVxXCpnkAgV5kbjmjGNYzAEae0rvg1sAdESHGrA4DJ3Zj3z8ZKre?filepath=/1598248765758_Cooper_Build_full_color.png"
+                                      class="media-object img-responsive" style="width: 146px; max-height: 70px;">
+                                  </div>
+                                </div>
+                                <div class="col-xs-2">
+                                  <div class="media-body">
+                                    <table style="font-size: 10.5px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Project Name :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Location :</b>
+										  <%=ifnull(add_esti_work_obj.Project.Address,"")%>
+                                            
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td> <b>Subject :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="vertical-align: top;"><b>Date : </b>
+                                            <%=ifnull(add_esti_work_obj.Project.Project_Start_Date,"")%>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="col-xs-2" align="center">
+                                  <h3 style="-webkit-transform: rotate(-45deg);color:red;font-size: 24px !important;">
+                                    Estimate <br>
+                                    <%=add_esti_work_obj.Estimate_No%>
+                                  </h3>
+                                </div>
+                                <div class="col-xs-3" style="margin-left: 150px;">
+                                  <div class="media-body">
+                                    <table style="font-size: 11px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Company :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Company_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Client :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Contact_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td><b>Location :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Mailing_Address,"")%>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="table-responsive" style="height: 700px;">
+                        <table class="table">
+                          <thead class="coll">
+                            <tr>
+                              <th>S No</th>
+                              <th>Deliverable Template</th>
+                              <th>Qty</th>
+                              <th>Unit</th>
+                              <th>Rate</th>
+                              <th>Total </th>
+                              <th>Working Days </th>
+                              <th>Attention</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+<%
+			for each  sumary_glb_obj in Estimate_Deliverable[Add_Estimate_Worksheet == add_esti_work_obj.ID] sort by S_No
+			{
+				%>
+<tr>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.S_No,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.Name,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.Qty,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.Unit,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.Rate,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull("$" + thisapp.Estimate.str_to_comma(sumary_glb_obj.Sub_Total),"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.Days,"")%>
+                                </td>
+                                <td>
+                                  <%=ifnull(sumary_glb_obj.ATTENTION.Attention,"")%>
+                                </td>
+                              </tr>
+<%
+			}
+			%>
+<tr style="border-bottom:2px solid!important;border-top:2px solid!important;">
+                                  <th colspan="2" style="text-align:right;">Total</th>
+  
+  
+                                  <th style="text-align: right;" colspan="4" class="tdNoWrap">
+                                    <%=ifnull("$" + thisapp.Estimate.str_to_comma(Estimate_Deliverable[Add_Estimate_Worksheet == add_esti_work_obj.ID].sum(Sub_Total)),"")%>
+                                  </th>
+                                  <th style="text-align: right;" colspan="1" class="tdNoWrap">
+                                    <%=Estimate_Deliverable[Add_Estimate_Worksheet == add_esti_work_obj.ID].sum(Days)%>
+                                  </th>
+                                </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                </div>
+            </div>
+    
+            <div class="tabby-tab">
+ 			<!--<input type="radio" id="tab-2" name="tabby-tabs" <%=if(input.tab == "dv","checked","")%>>-->
+			<input type="radio" id="tab-2" name="tabby-tabs" checked>
+                <label for="tab-2">Detailed View</label>
+                <div class="tabby-content">
+                    <div class="row mt-2">
+                        <div style="border: none;" class="panel panel-primary">
+                          <div style="padding: 0; background-color: #fff; border-bottom: 0; color: black;"
+                            class="panel-heading">
+                            <div style="margin-top: 15px; margin-bottom: 15px;" class="row">
+                              <div class="col-xs-12">
+                                <div class="col-xs-2">
+                                  <div class="media">
+                                    <img
+                                      src="https://creatorapp.zohopublic.com/file/cooperdevelopment/clean/Company_Logo_Report/1556703000026947013/Image/image-download/9QbE6Vm9HAyWTYTvga1aVdNQ5ajYRBVM5SVyytyHPtWDtfyUPVxXCpnkAgV5kbjmjGNYzAEae0rvg1sAdESHGrA4DJ3Zj3z8ZKre?filepath=/1598248765758_Cooper_Build_full_color.png"
+                                      class="media-object img-responsive" style="width: 146px; max-height: 70px;">
+                                  </div>
+                                </div>
+  
+                                <div class="col-xs-2">
+                                  <div class="media-body">
+                                    <table style="font-size: 10.5px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Project Name :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Location :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Address,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td> <b>Subject :</b>
+										  <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                            
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="vertical-align: top;"><b>Date : </b>
+                                            <%=ifnull(add_esti_work_obj.Project.Project_Start_Date,"")%>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="col-xs-2" align="center">
+                                  <h3 style="-webkit-transform: rotate(-45deg);color:red;font-size: 24px !important;">
+                                    Estimate <br>
+                                    <%=add_esti_work_obj.Estimate_No%>
+                                  </h3>
+                                </div>
+                                <div class="col-xs-3" style="margin-left: 150px;">
+                                  <div class="media-body">
+                                    <table style="font-size: 11px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Company :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Company_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Client :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Contact_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td><b>Location :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Mailing_Address,"")%>
+                                          </td>
+                                        </tr>
+<!------------------------------- New Addition of Subcontractor name and AMount----------------------------------------->
+										<tr>
+                                          <td><b>Subcontractor Name &nbsp &nbsp </b>
+                                          </td> <td><b>Subcontractor Amount</b>
+                                          </td>  
+                                        </tr>
+<%
+			for each  Sub in SubContractor
+			{
+				%>
+<tr>
+                                          <td><%=Sub.Subcontractor_Name.Contact_Name%></td>
+                                          <td><%=Sub.Total_Amount%></td>
+										  
+                                        </tr>
+<%
+			}
+			%>
+</tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+  
+                            <div elName='zc-component' formLinkName='Estimate_Deliverable_Class_Filter'
+                              params='zc_Header=false&Add_Estimate_Worksheet=<%=add_esti_work_obj.ID%>&Page_Check=mainfilter&amp;zc_SuccMsg=Data Added Successfully!&amp;zc_SubmitVal=Submit&amp;zc_ResetVal=Reset'>
+                              Loading Form...
+                            </div>
+                            <div class="text-end mt-1 mb-1">
+                              <div class="row">
+                                <div style="width: 76%;"></div>
+                                <div style="width: 5%;">
+                                  <div class="dropdown">
+                                    <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                      data-mdb-toggle="dropdown" aria-expanded="false">
+                                      Raise
+                                    </button>
+                                    <ul class="dropdown-menu">
+                                      <li><a class="dropdown-item" href="#Form:Estimate_Converter?Estimate_Worksheet=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&Identifier=estimateraise10" class="btn btn-outline-info btcol text-decoration-none">Raise 10%</a></li>
+                                      <li><a class="dropdown-item" href="#Form:Estimate_Converter?Estimate_Worksheet=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&Identifier=estimateraise20" class="btn btn-outline-info btcol text-decoration-none">Raise 20%</a></li>
+                                    </ul>
+                                  </div>
+                                </div>
+                                <div style="width: 19%;text-align: start;">
+<%
+			if(!add_esti_work_obj.Estimate_No.contains("CO") && add_esti_work_obj.EstimateConvertedToProposal == false)
+			{
+				%>
+<a href="#Form:Estimate_Converter?Estimate_Worksheet=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&Identifier=proposal"
+                                    class="btn btn-outline-info btcol">Convert Proposal</a>
+<%
+			}
+			else
+			{
+				%>
+<button disabled class="btn btn-outline-info btcol text-dark">Converted To Proposal</button>
+<%
+			}
+			if(add_esti_work_obj.Estimate_No.contains("CO") || add_esti_work_obj.EstimateConvertedToProposal == true)
+			{
+				%>
+<button disabled class="btn btn-outline-info btcol">Convert  to C-O</button>
+<%
+			}
+			else
+			{
+				%>
+<a href="#Form:Estimate_Converter?Estimate_Worksheet=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&Identifier=ConvertToChangeOrder"
+                                    class="btn btn-outline-info btcol">Convert To C-O</a>
+<%
+			}
+			if(Estconverted == false)
+			{
+				%>
+<a href="#Form:Estimate_Converter?Estimate_Worksheet=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog&zc_Header=false&Identifier=project"
+                                    class="btn btn-outline-info btcol">Convert Project</a>
+<%
+			}
+			else
+			{
+				%>
+<button disabled
+                                    class="btn btn-outline-info btcol">Convert Project</button>
+<%
+			}
+			%>
+</div>
+                              </div>
+                              
+                              
+                            </div>
+                            <!--Deliverable Task-->
+<%
+			embed_deli_class = if(input.deliverable_class == null || input.deliverable_class == "" || input.deliverable_class == "null","null",input.deliverable_class);
+			%>
+<div style="height: 600px;" name="estpage" elName='zc-component' viewLinkName="Estimate_Deliverable_Task"
+                                params='addest_id=<%=add_esti_work_obj.ID%>&deliverable_class=<%=embed_deli_class%>'>
+                                Loading View...</div>
+  
+  
+                              <!--Deliverable Task End-->
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+    
+            <div class="tabby-tab">
+                 <!--<input type="radio" id="tab-3" name="tabby-tabs" <%=if(input.tab == "qe","checked","")%>>-->
+                <input type="radio" id="tab-3" name="tabby-tabs">
+                <label for="tab-3">Quick Edit</label>
+                <div class="tabby-content">
+                    <div class="row mt-2">
+                        <div style="border: none;" class="panel panel-primary">
+                          <div style="padding: 0; background-color: #fff; border-bottom: 0; color: black;"
+                            class="panel-heading">
+                            <div style="margin-top: 15px; margin-bottom: 15px;" class="row">
+                              <div class="col-xs-12">
+                                <div class="col-xs-2">
+                                  <div class="media">
+                                    <img
+                                      src="https://creatorapp.zohopublic.com/file/cooperdevelopment/clean/Company_Logo_Report/1556703000026947013/Image/image-download/9QbE6Vm9HAyWTYTvga1aVdNQ5ajYRBVM5SVyytyHPtWDtfyUPVxXCpnkAgV5kbjmjGNYzAEae0rvg1sAdESHGrA4DJ3Zj3z8ZKre?filepath=/1598248765758_Cooper_Build_full_color.png"
+                                      class="media-object img-responsive" style="width: 146px; max-height: 70px;">
+                                  </div>
+                                </div>
+                                <div class="col-xs-2">
+                                  <div class="media-body">
+                                    <table style="font-size: 10.5px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Project Name :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Location :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Job_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td> <b>Subject :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Address,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td style="vertical-align: top;"><b>Date : </b>
+                                            <%=ifnull(add_esti_work_obj.Project.Project_Start_Date,"")%>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                                <div class="col-xs-2" align="center">
+                                  <h3 style="-webkit-transform: rotate(-45deg);color:red;font-size: 24px !important;">
+                                    Estimate <br>
+                                    <%=add_esti_work_obj.Estimate_No%>
+                                  </h3>
+                                </div>
+                                <div class="col-xs-3" style="margin-left: 150px;">
+                                  <div class="media-body">
+                                    <table style="font-size: 11px !important; font-family: sans-serif;">
+                                      <tbody>
+                                        <tr>
+                                          <td colspan="2"><b>Company :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Company_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td colspan="2"><b>Client :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Contact_Name,"")%>
+                                          </td>
+                                        </tr>
+                                        <tr>
+                                          <td><b>Location :</b>
+                                            <%=ifnull(add_esti_work_obj.Project.Client_Name.Mailing_Address,"")%>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div elName='zc-component' formLinkName='Estimate_Deliverable_Class_Filter'
+                              params='zc_Header=false&Add_Estimate_Worksheet=<%=add_esti_work_obj.ID%>&Page_Check=quickfilter&amp;zc_SuccMsg=Data Added Successfully!&amp;zc_SubmitVal=Submit&amp;zc_ResetVal=Reset'>
+                              Loading Form...
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+  
+                      <div name="quickpage" elName='zc-component' viewLinkName="Test"
+                        params='est_no=<%=add_esti_work_obj.ID%>&deliverable_class_ids=<%=embed_deli_class%>'>Loading
+                        View...</div>
+                </div>
+            </div>
+    
+            <div class="tabby-tab">
+                 <!--<input type="radio" id="tab-4" name="tabby-tabs" <%=if(input.tab == "mal","checked","")%>>-->
+                <input type="radio" id="tab-4" name="tabby-tabs">
+                <label for="tab-4">Materials & Labors</label>
+                <div class="tabby-content">
+                    <div class="col-12">
+                        <div elName='zc-component' formLinkName='Estimate_Deliverable_Class_Filter'
+                          params='zc_Header=false&Add_Estimate_Worksheet=<%=add_esti_work_obj.ID%>&Page_Check=material&amp;zc_SuccMsg=Data Added Successfully!&amp;zc_SubmitVal=Submit&amp;zc_ResetVal=Reset'>
+                          Loading Form...
+                        </div>
+                        <div style="height: 1000px;" name="matpage" elName='zc-component' viewLinkName="Estimate_Material_Labor"
+                          params='addest_id=<%=add_esti_work_obj.ID%>&deliverable_class=<%=embed_deli_class%>'>Loading
+                          View...</div>
+                      </div>
+                </div>
+            </div>
+            <div class="tabby-tab subcontractTabs">
+                 <!--<input type="radio" id="tab-5" name="tabby-tabs" <%=if(input.tab == "sc","checked","")%>>-->
+                <input type="radio" id="tab-5" name="tabby-tabs">
+                <label for="tab-5">Subcontractors</label>
+                <div class="tabby-content">
+				<div class="m-2">
+						<a href="#Form:Subcontractor?Estimate_No=<%=add_esti_work_obj.ID%>&zc_LoadIn=dialog" style="text-decoration:none;padding:10px;background: #345070;color:white">Add Subcontractor</a>
+				</div>
+						
+                   <div elName='zc-component' class="my-4" viewLinkName='All_Subcontractors?Estimate_No=<%=add_esti_work_obj.Estimate_No%>' params='zc_Header=false'>Loading View...</div>
+                </div>
+            </div>
+
+            <div class="tabby-tab">
+                 <!--<input type="radio" id="tab-6" name="tabby-tabs" <%=if(input.tab == "gc","checked","")%>>-->
+                <input type="radio" id="tab-6" name="tabby-tabs">
+                <label for="tab-6">Gantt chart</label>
+                <div class="tabby-content">
+<%
+			if(zoho.adminuserid == zoho.loginuserid)
+			{
+				portal_url = "https://creatorapp.zoho.com/cooperdevelopment/cooper-build";
+			}
+			else
+			{
+				portal_url = "https://cooperdevelopment.zohocreator.com/portal/cooper-build";
+			}
+			%>
+<iframe height='500px' width='100%'
+                        src="<%=portal_url%>/view-embed/Estimate_Gantt_chart?Add_Estimate_Worksheet=<%=add_esti_work_obj.ID%>"></iframe>
+                </div>
+            </div>
+
+            <div class="tabby-tab">
+                 <!--<input type="radio" id="tab-7" name="tabby-tabs" <%=if(input.tab == "doc","checked","")%>>-->
+                <input type="radio" id="tab-7" name="tabby-tabs">
+                <label for="tab-7">Document</label>
+                <div class="tabby-content">
+                    <div class="col-md-12 col-12 mt-4">
+                        <div class="card-header radius subCardHeader"
+                          style="border-radius:0px;background-color: #4a6b90;border-top-right-radius: 5px;border-top-left-radius: 5px;padding: 5px 1rem;">
+                          <div class="row">
+                            <div class="col-md-12 col-12 p-0">
+                              <h5 class="text-center pageTitle mb-0" style="font-weight:900;">
+                                Estimate File Log
+<%
+			doc_add_url = "#Form:Select_Type?Estimate_Worksheet=" + add_esti_work_obj.ID + "&zc_LoadIn=dialog&zc_Header=false&zc_NextUrl=#Script:dialog.close";
+			%>
+<span class="pull-right edit ">
+                                    <a style="color:#fff;" href=<%=doc_add_url%>>
+                                      <i class="fa fa-plus mr-2" style="color: white !important;" aria-hidden="true"></i>
+                                    </a>
+                                  </span>
+                              </h5>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="card">
+                          <div class="card-block p-0">
+                            <div class="row">
+                              <div class="col-md-12 col-12">
+                                <div elName='zc-component'
+                                  viewLinkName='Estimate_File_Log?Estimate_Worksheet_Multi_Select.ID=<%=add_esti_work_obj.ID%>'
+                                  params='zc_Header=true&zc_ReportName=false&zc_SaveRec=false&zc_RecSelect=false&zc_EditRec=false&zc_DuplRec=false&zc_MoreAction=false&zc_DelRec=false&zc_ShowAs=false&zc_Summary=false&zc_AddRec=false'>
+                                  Loading View...</div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                </div>
+            </div>
+    
+            
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+     body {
+      background: #e6ebf1;
+      color: #868e96;
+      font-size: 14px;
+      font-family: sans-serif;
+      letter-spacing: 0.4px;
+    }
+	.zc_transition label{
+		color:black !important;
+		height:15px !important;
+	}
+	.zc_transition label:nth-child(3){
+		background:none !important;
+	}
+    div.ParentCard {
+      border: 4px solid #233c59;
+      box-shadow: 0 0 10px;
+      font-family: sans-serif;
+    }
+
+    .parent_card_header {
+      background: #233c59;
+      color: white;
+    }
+    /* Tab */
+    .overlay {
+   position: fixed;
+   height:100%;
+   top: 10;
+   width:88%;	
+   }
+
+    .tabs {
+				position: relative;
+				display: flex;
+				min-height: 900px;
+				border-radius: 8px 8px 0 0;
+				overflow: scroll;
+			}
+
+			.tabby-tab {
+				flex: 1;
+			}
+
+ .tabby-tab label {
+				display: block;
+				box-sizing: border-box;
+				height: 40px;
+				padding: 5px;
+				text-align: center;
+				background: #345070;
+				cursor: pointer;
+				transition: background 0.5s ease;
+				color: #fff;
+                font-weight: 700;
+			}
+
+			.tabby-tab label:hover {
+				background: fff;
+			}
+
+			.tabby-content {
+				position: absolute;
+				color: #000;
+				left: 0;
+				bottom: 0;
+				right: 0;
+				/* clear the tab labels */
+				top: 40px;
+				padding: 20px;
+				border-radius: 0 0 8px 8px;
+				background: #fff;
+				transition:
+					opacity 0.8s ease,
+					transform 0.8s ease;
+
+				/* show/hide */
+				opacity: 0;
+				transform: translateY(50%);
+				transform-origin: top left;
+
+			}
+
+			/* MAKE IT WORK ----- */
+
+			.tabby-tab [type=radio] {
+				display: none;
+			}
+
+			[type=radio]:checked~label {
+				background: #bbd3ee;
+				z-index: 2;
+                color: #000;
+                font-weight: 700;
+			}
+
+			[type=radio]:checked~label~.tabby-content {
+				z-index: 1;
+				opacity: 1;
+				transform: scale(1);
+			}
+
+			@media screen and (max-width:900px) {
+				* {
+					font-size: 12px !important;
+				}
+
+				.tabby-tab_2 label {
+					padding: 5px !important;
+				}
+
+				.tabby-tab_3 label {
+					padding: 5px !important;
+				}
+			}
+
+            /* color */
+    .zc-reports-footer-sec {
+      background: #D63384;
+      color: #fff;
+    }
+
+    .align {
+      margin-top: 0px;
+    }
+
+    .pad {
+      margin-top: -14px;
+    }
+
+    details>summary {
+
+      list-style: none;
+    }
+
+    summary::-webkit-details-marker {
+      display: none
+    }
+
+    summary::before {
+      content: '▼ ';
+      font-size: 21px;
+    }
+
+    details[open] summary:before {
+      content: "►";
+      font-size: 21px;
+    }
+
+    .tab {
+      border: 1px solid;
+      background-color: #c6cee7;
+      font-size: 12px;
+    }
+
+    .wid {
+      width: 5%;
+      padding: 9px 4px;
+    }
+
+    .wid1 {
+      width: 20%;
+      padding: 9px 4px;
+    }
+
+    .wid2 {
+      width: 15%;
+      padding: 9px 4px;
+    }
+
+    .wid3 {
+      width: 15%;
+    }
+
+    .wid4 {
+      width: 10%;
+      padding: 9px 4px;
+    }
+
+    .wid5 {
+      width: 8%;
+      padding: 9px 4px;
+    }
+
+    .wid6 {
+      width: 30%;
+      padding: 9px 4px;
+    }
+
+    .wid7 {
+      width: 20%;
+    }
+
+    .wid8 {
+      width: 60%;
+    }
+
+    .siz {
+      font-size: 10.5px;
+    }
+
+    .mar {
+      margin-top: -25;
+    }
+
+    .labmat {
+      width: 15%;
+    }
+
+    .table thead tr td,
+    .table tbody tr td,
+    .table tfoot tr td,
+    .table tbody tr td {
+      padding: 10px 5px;
+    }
+
+    .table>:not(caption)>*>* {
+      border-bottom-width: 0px;
+    }
+
+    .table>:not(caption)>*>* {
+      padding: 0.3rem 0.5rem;
+    }
+
+    .table>:not(caption)>*>* {
+
+      border-bottom-width: 0px;
+    }
+
+    .table {
+      text-align: right;
+      font-size: 11px;
+
+    }
+
+    .coll {
+      background: #c6cee7;
+    }
+
+    .table>:not(caption)>*>* {
+      padding: 10px 5px;
+    }
+
+    .zcform_Estimate_Deliverable_Class_Filter .first-column .form-label {
+      width: 159.319px;
+    }
+
+    .form-table.label-top label.form-label {
+      float: none;
+    }
+
+    form[name="Estimate_Deliverable_Class_Filter"].label-top {
+      width: 499.847px;
+    }
+
+
+    .zc-footer-wrapper {
+      border-top: 0px solid #e7e7e7;
+    }
+
+    .zcform_Estimate_Deliverable_Class_Filter .first-column .form-label {
+      width: 0px;
+    }
+
+    .zc-pb-tile-card {
+      overflow: hidden;
+    }
+
+    .formbutton {
+      padding: 0px 15px;
+    }
+
+    .select2-drop-active {
+      border: 0px solid #333;
+    }
+
+    .form-group {
+      margin-bottom: 0px;
+    }
+
+
+    .table>:not(caption)>*>* {
+      border-bottom-width: 0px;
+    }
+
+    .tabwid {
+      width: 33.33%;
+    }
+
+    .table>:not(caption)>*>* {
+      padding: 10px 0px;
+    }
+
+    .zc-form-fullheight .form-outer-wrapper .formContainer {
+      margin-left: 20px;
+      padding: 0px 0px;
+    }
+
+    .btn-secondary {
+      text-shadow: none;
+      color: #000;
+      background-color: #d8dacd;
+      border-color: #d8dacd;
+      font-size: 11px;
+      padding: 2px 0px;
+    }
+
+    .btn-secondary:hover {
+      color: #000;
+      background-color: #d8dacd;
+      border-color: #d8dacd;
+    }
+
+    /*border hide*/
+    .zc-pb-page-content-wrapper [displaytype="plain"] .elemContainment {
+      border: 0px solid rgba(0, 0, 0, 0.07);
+    }
+
+    .form-table.label-top label.form-label {
+      float: right;
+    }
+
+    .docwidth {
+      width: 33.33%
+    }
+
+    .zc-li-outline.arrows-2-square-upload:before {
+      margin-left: -25px;
+    }
+
+    .table> :not(:last-child)> :last-child>* {
+      border-bottom: 1px solid #eceeef !important;
+    }
+
+    .zc-reports-footer-sec {
+      background: #4a6b90;
+      color: #fff;
+    }
+
+    .zc-form-fullheight .form-outer-wrapper .formContainer .subform-outer-wrapper.form-group {
+      width: 1400px !important;
+    }
+
+    .popupbox {
+      width: 1400px !important;
+    }
+
+    .popupConentContainer {
+      width: 1400px !important;
+	  overflow:scroll;
+    }
+
+    .btcol {
+      padding: 0px 3px;
+      font-size: 12px;
+    }
+
+    .btn-outline-info:hover {
+      color: #fff;
+      background-color: #345070;
+      border-color: #345070;
+    }
+
+    .btn-outline-info {
+      color: #000;
+      border-color: #bbd3ee;
+      background: #bbd3ee;
+    }
+
+    /* Dropdown */
+    .dropdown:hover>.dropdown-menu {
+      display: block;
+    }
+
+    .dropdown>.dropdown-toggle:active {
+      /*Without this, clicking will make it sticky*/
+      pointer-events: none;
+    }
+
+    .dropdown-menu {
+      position: absolute;
+      z-index: 995;
+      display: none;
+      min-width: 3em;
+      max-width: 86px;
+      padding: 0px 0px;
+      margin: 0;
+      font-size: 10px;
+      color: #212529;
+      text-align: center;
+      list-style: none;
+      background-color: #fff;
+      background-clip: padding-box;
+      border: 1px solid rgba(0, 0, 0, .15);
+      border-radius: 0.25rem;
+	  margin-left: -30px;
+    }
+
+    .btn-primary {
+      color: #000;
+      background-color: #bbd3ee;
+      border-color: #bbd3ee;
+      padding: 0px 2px;
+      font-size: 13px;
+    }
+
+    .dropdown-item:hover {
+      color: #fff;
+      background-color: #345070;
+    }
+
+    .dropdown-item {
+      display: block;
+      width: 100%;
+      padding: 2px 2px;
+      clear: both;
+      font-weight: 400;
+      color: #212529;
+      text-align: inherit;
+      text-decoration: none;
+      white-space: nowrap;
+      background-color: #bbd3ee;
+      border: 0;
+    }
+
+    .btn-primary:hover {
+      color: #fff;
+      background-color: #345070;
+      border-color: #345070;
+    }
+
+    ::-webkit-scrollbar{
+        width: 5px;
+    }
+	.form-table.label-top label.form-label {
+    background: #fff;
+}
+.table tbody tr td {
+    border-bottom: 0px solid #eceeef;
+}
+ .color {
+      background: #c6cee7;
+      color: #000;
+    }
+	.form-group .form-control.zc_datefield {
+    min-width: 173px;
+}
+.fa-calendar:before {
+    margin-left: -55px;
+}
+
+.subcontractTabs .form-table label {
+	background: #fff !important;
+}
+  </style>
+<%
+		}
+		else
+		{
+			%>
+<h4>Please pass some Arguments...!
+<%
+		}
+	}
+	else
+	{
+		%>
+<h4>Please pass some Arguments...! </h4>
+<%
+	}
+
+}%>
