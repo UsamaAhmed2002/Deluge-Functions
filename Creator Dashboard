@@ -1,0 +1,1688 @@
+<%{
+	log_obj = Daily_Log[Email == zoho.loginuserid && Date_field == zoho.currentdate];
+	// 	if(log_obj.count() == 0 && zoho.loginuserid != zoho.adminuserid)
+	// 	{
+	// 		openUrl("#Form:Check_In1","same window");
+	// 	}
+	lead_obj_count = Add_Lead[ID != null].count();
+	convert_lead_obj_count = Add_Lead[Activitity_Status == "Converted"].count();
+	qualifed_lead_obj_count = Add_Lead[Activitity_Status == "Pre-Qualified"].count();
+	contact_lead_obj_count = Add_Lead[Activitity_Status == "Contacted"].count();
+	%>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <!-- lato fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Lato:400,700' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=El Messiri" />
+        <link href='https://fonts.googleapis.com/css?family=Poppins' rel='stylesheet'>
+        <!-- font-awesome CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body class="bg-cyan">
+        <div class="container-fluid parent">
+            <div class="row">
+                <div class="col-md-12 col-12 px-0">
+                    <div class="card parentCard border-0">
+                        <div class="card-header parentCArdHeader border-0">
+                            <div class="row">
+                                <div class="col-md-12 col-12">
+                                    <div class="card border-0 inventryCard">
+                                        <div class="card-body border-0">
+                                            <div class="row text-center">
+                                                <div class="col-md-12 col-12">
+                                                    <p class="main_h mb-0">LEAD DASHBOARD</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body myCardBody p-3">
+                            <!-- <section class="section_2  Mysection">
+                                <div class="row myRow">
+                                    <div class="col-md-12 col-sm-12 col-12 myView">
+                                        <div class="row mt-4">
+                                            <div class="col-md-3 col-12">
+                                                <div class="card salesCard salecard shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8">
+                                                                <p class="salesValue mb-0 mt-3">25,600</p>
+                                                                <p class="small captionText">Total Sales
+                                                                    <span class="increment pl-3"><i class="fa fa-chevron-circle-up" aria-hidden="true"></i></span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4 text-center">
+                                                                <img src="https://img.icons8.com/fluent/60/000000/total-sales-1.png"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="card salesCard Pending_Sales shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8">
+                                                                <p class="salesValue mb-0 mt-3">12,000</p>
+                                                                <p class="small captionText">Pending Sales
+                                                                    <span class="increment pl-3"><i class="fa fa-chevron-circle-down" aria-hidden="true"></i></span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4 text-center">
+                                                                <img src="https://img.icons8.com/fluent/60/000000/waiter.png"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="card salesCard Achieved_Sales shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8">
+                                                                <p class="salesValue mb-0 mt-3">56,000</p>
+                                                                <p class="small captionText">Achieved Sales
+                                                                    <span class="increment pl-3"><i class="fa fa-check" aria-hidden="true"></i></span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4 text-center">
+                                                                <img src="https://img.icons8.com/fluent/60/000000/radar.png"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3 col-12">
+                                                <div class="card salesCard Future_Sales shadow-sm">
+                                                    <div class="card-body p-3">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-8">
+                                                                <p class="salesValue mb-0 mt-3">12,000</p>
+                                                                <p class="small captionText">Future Sales
+                                                                    <span class="increment pl-3"><i class="fa fa-chevron-circle-down" aria-hidden="true"></i></span>
+                                                                </p>
+                                                            </div>
+                                                            <div class="col-4 text-center">
+                                                                <img src="https://img.icons8.com/fluent/60/000000/improvement.png"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section> -->
+                            <section class="section_4 Mysection">
+                                <div class="row mt-3">
+                                    <div class="col-md-12 col-12">
+                                        <div class="card border-0 inventryCard">
+                                            <div class="card-header border-bottom-0">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-12">
+                                                        <p class="small mb-0 text-center card_h1">Lead Statics I</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row align-self-center  circleCardContainer">
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/add-file.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 completedText text-center"><%=ifnull(lead_obj_count,0)%></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <a href="#Report:All_Leads?zc_LoadIn=dialog" style="text-decoration: none;">
+                                                                        <h5 class="content-title">Leads</h5>
+                                                                        <p class="content-text"><%=ifnull(lead_obj_count,0)%></p>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Convert Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/petition.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 pendingText text-center"><%=ifnull(convert_lead_obj_count,0)%></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <a href="#Report:All_Leads?zc_LoadIn=dialog&Lead_Status=Converted" style="text-decoration: none;">
+                                                                        <h5 class="content-title">Convert Leads</h5>
+                                                                        <p class="content-text"><%=ifnull(convert_lead_obj_count,0)%></p>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Qualified Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/bookmark--v1.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 notRaisedText text-center"><%=ifnull(qualifed_lead_obj_count,0)%></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <a href="#Report:All_Leads?zc_LoadIn=dialog&Lead_Status=Pre-Qualified" style="text-decoration: none;">
+                                                                        <h5 class="content-title">Qualified Leads</h5>
+                                                                        <p class="content-text"><%=ifnull(qualifed_lead_obj_count,0)%></p>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Contact Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/speech-bubble.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 initiatedText text-center"><%=ifnull(contact_lead_obj_count,0)%></p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <a href="#Report:All_Leads?zc_LoadIn=dialog&Lead_Status=Contacted" style="text-decoration: none;">
+                                                                        <h5 class="content-title">Contact Leads</h5>
+                                                                        <p class="content-text"><%=ifnull(contact_lead_obj_count,0)%></p>
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- <section class="section_4 Mysection">
+                                <div class="row mt-3">
+                                    <div class="col-md-12 col-12">
+                                        <div class="card border-0 inventryCard">
+                                            <div class="card-header border-bottom-0">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-12">
+                                                        <p class="small mb-0 text-center card_h1">Lead Statics I</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row align-self-center  circleCardContainer">
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">New Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/add-file.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 completedText text-center">20,000</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <h5 class="content-title">New Leads</h5>
+                                                                    <p class="content-text">20,000</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Follow Up Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/petition.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 pendingText text-center">20,000</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <h5 class="content-title">Follow Up Leads</h5>
+                                                                    <p class="content-text">20,000</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Qualified Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/bookmark--v1.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 notRaisedText text-center">20,000</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <h5 class="content-title">Qualified Leads</h5>
+                                                                    <p class="content-text">20,000</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3 col-sm-6 col-12 circleCard">
+                                                        <div class="card border-0 invoice_1">
+                                                            <div class="card-body">
+                                                                <div class="row">
+                                                                    <div class="col-md-12 col-12">
+                                                                        <p class="info mb-0 text-center">Proposed Leads
+                                                                            <img class="notifyIcons" src="https://img.icons8.com/flat-round/64/000000/speech-bubble.png">
+                                                                        </p>
+                                                                        <p class="invoiceCount mb-0 initiatedText text-center">4000</p>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="content-overlay rounded-circle">
+                                                                <div class="content-details fadeIn-bottom">
+                                                                    <h5 class="content-title">Proposed Leads</h5>
+                                                                    <p class="content-text">4000</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section> -->
+                            <section class="section_4 Mysection">
+                                <div class="row mt-3">
+                                    <div class="col-md-4 col-sm-6 col-12 costAndReport">
+                                        <div class="row mt-3">
+                                            <div class="col-md-12 col-12">
+                                                <div class="card border-0 costCard costCard_1 shadow-sm">
+                                                    <div class="card-header border-bottom-0">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-12">
+                                                                <p class="small mb-0 text-center card_h">Cost of Purchase order</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-2 col-sm-4 col-3">
+                                                                <img src="https://img.icons8.com/color/48/000000/purchase-order.png">
+                                                            </div>
+                                                            <div class="col-md-10 col-sm-8 col-9 rounded">
+                                                                <div class="d-flex">
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 20,000</p>
+                                                                        <p class="YearMonth">This Year</p>
+                                                                    </section>
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 1,00,000</p>
+                                                                        <p class="YearMonth">5 Yrs</p>
+                                                                    </section>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card border-0 costCard costCard_1 shadow-sm">
+                                                    <div class="card-header border-bottom-0">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-12">
+                                                                <p class="small mb-0 text-center card_h">Cost Reduction</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-2 col-sm-4 col-3">
+                                                                <img src="https://img.icons8.com/officel/40/000000/cutting-coupon.png">
+                                                            </div>
+                                                            <div class="col-md-10 col-sm-8 col-9 rounded">
+                                                                <div class="d-flex">
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 20,000</p>
+                                                                        <p class="YearMonth">This Year</p>
+                                                                    </section>
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 1,00,000</p>
+                                                                        <p class="YearMonth">5 Yrs</p>
+                                                                    </section>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="card border-0 costCard costCard_1 shadow-sm">
+                                                    <div class="card-header border-bottom-0">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-12">
+                                                                <p class="small mb-0 text-center card_h">Cost Savings</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body">
+                                                        <div class="row align-items-center">
+                                                            <div class="col-md-2 col-sm-4 col-3">
+                                                                <img src="https://img.icons8.com/dusk/64/000000/money-bag-yen.png">
+                                                            </div>
+                                                            <div class="col-md-10 col-sm-8 col-9 rounded">
+                                                                <div class="d-flex">
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 20,000</p>
+                                                                        <p class="YearMonth">This Year</p>
+                                                                    </section>
+                                                                    <section class="costInfo col-6">
+                                                                        <p class="cost">$ 1,00,000</p>
+                                                                        <p class="YearMonth">5 Yrs</p>
+                                                                    </section>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-6 col-12 costAndReport "> 
+                                        <div class="row mt-3">
+                                            <div class="col-md-12 col-12">
+                                                 <div class="card border-0 costCard costCard_1 shadow-sm">
+                                                    <div class="card-header border-bottom-0">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-12">
+                                                                <p class="mb-0 text-center card_h">Recent Leads</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body p-0" style="height:74vh;overflow: scroll;">
+                                                        <table class="table table-striped table-hover able-bordered myTable mb-0">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Lead Name</th>
+                                                                    <th>Email</th>
+                                                                    <th>Phone Number</th>
+                                                                    <th>Address</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+<%
+	for each  lead_objts in Add_Lead[ID != null] sort by Added_Time desc
+	{
+		%>
+<tr>
+                                                                    <td><%=ifnull(lead_objts.Name,"-")%></td>
+                                                                    <td><%=ifnull(lead_objts.Email,"-")%></td>
+                                                                    <td><%=ifnull(lead_objts.Phone_Number,"-")%></td>
+                                                                    <td><%=ifnull(lead_objts.Address.country,"-")%></td>
+                                                                </tr>
+<%
+	}
+	%>
+</tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- Progress -->
+                            <section class="section_3 Mysection">
+                                <div class="row mt-5">
+                                    <div class="col-md-4 col-sm-12 col-12">
+                                        <div class="row">
+                                            <div class="col-md-12 col-12">
+                                                <div class="card inventryCard border-0" style="padding-bottom: 10px;">
+                                                    <div class="card-body border-bottom-0">
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-12">
+                                                                <h6 class="text-muted progressCaption">Leads
+                                                                    <span class="qValue pull-right text-dark"><%=ifnull(lead_obj_count,0)%></span>
+                                                                </h6>
+                                                                <div class="progress mt-3">
+                                                                    <div class="progress-bar progress-bar-striped bg-secondary" role="progressbar" style="width:<%=(lead_obj_count * lead_obj_count / 100 * 100).round(0)%>%" aria-valuenow="5" aria-valuemin="0" aria-valuemax="100"><%=(lead_obj_count * lead_obj_count / 100 * 100).round(0)%>%</div>
+                                                                </div>
+                                                                <h6 class="text-muted progressCaption mt-4">Convert Leads
+                                                                    <span class="qValue pull-right text-dark"><%=ifnull(convert_lead_obj_count,0)%></span>
+                                                                </h6>
+                                                                <div class="progress  mt-3">
+                                                                    <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: <%=(lead_obj_count * convert_lead_obj_count / 100 * 100).round(0)%>%" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"><%=(lead_obj_count * convert_lead_obj_count / 100 * 100).round(0)%>%</div>
+                                                                </div>
+                                                                <h6 class="text-muted progressCaption mt-4">Qualified Leads
+                                                                    <span class="qValue pull-right text-dark"><%=ifnull(qualifed_lead_obj_count,0)%></span>
+                                                                </h6>
+                                                                <div class="progress  mt-3">
+                                                                    <div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: <%=(lead_obj_count * qualifed_lead_obj_count / 100 * 100).round(0)%>%" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"><%=(lead_obj_count * qualifed_lead_obj_count / 100 * 100).round(0)%>%</div>
+                                                                </div>
+                                                                <h6 class="text-muted progressCaption mt-4">Contact Leads
+                                                                    <span class="qValue pull-right text-dark"><%=ifnull(contact_lead_obj_count,0)%></span>
+                                                                </h6>
+                                                                <div class="progress mt-3">
+                                                                    <div class="progress-bar progress-bar-striped bg-warning" role="progressbar" style="width: <%=(lead_obj_count * contact_lead_obj_count / 100 * 100).round(0)%>%" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"><%=(lead_obj_count * contact_lead_obj_count / 100 * 100).round(0)%>%</div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-12 col-12 productSubCard costAndReport">
+                                        <div class="card productCard border-0 inventryCard">
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-12">
+													<iframe height='500px' width='100%' frameborder='0' allowTransparency='true' scrolling='auto' src='https://creatorapp.zohopublic.com/rubenaorborc/cooperbuild20/report-embed/Next_Meeting/tMfmSZ04UPSqw4rdVYA4tFvP3u0rqwfZVANtnt1yS74Sdx4TfZJsAJVGVyg8rnqw3shGneWAuf6gE8Kfeq0nyO6Y6wSFKDHQQsQC'></iframe>
+                                                        <!-- <table id="q-graph">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th></th>
+                                                                    <th class="sent">Invoiced</th>
+                                                                    <th class="paid">Collected</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                <tr class="qtr" id="q1">
+                                                                    <th scope="row">Q1</th>
+                                                                    <td class="sent bar" style="height: 111px;">
+                                                                        <p>$18,450</p>
+                                                                    </td>
+                                                                    <td class="paid bar" style="height: 99px;">
+                                                                        <p>$16,500</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr class="qtr" id="q2">
+                                                                    <th scope="row">Q2</th>
+                                                                    <td class="sent bar" style="height: 206px;">
+                                                                        <p>$34,340</p>
+                                                                    </td>
+                                                                    <td class="paid bar" style="height: 194px;">
+                                                                        <p>$32,340</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr class="qtr" id="q3">
+                                                                    <th scope="row">Q3</th>
+                                                                    <td class="sent bar" style="height: 259px;">
+                                                                        <p>$43,145</p>
+                                                                    </td>
+                                                                    <td class="paid bar" style="height: 193px;">
+                                                                        <p>$32,225</p>
+                                                                    </td>
+                                                                </tr>
+                                                                <tr class="qtr" id="q4">
+                                                                    <th scope="row">Q4</th>
+                                                                    <td class="sent bar" style="height: 110px;">
+                                                                        <p>$18,415</p>
+                                                                    </td>
+                                                                    <td class="paid bar" style="height: 195px;">
+                                                                        <p>$32,425</p>
+                                                                    </td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                        <div id="ticks">
+                                                            <div class="tick" style="height: 59px;">
+                                                                <p>$50,000</p>
+                                                            </div>
+                                                            <div class="tick" style="height: 59px;">
+                                                                <p>$40,000</p>
+                                                            </div>
+                                                            <div class="tick" style="height: 59px;">
+                                                                <p>$30,000</p>
+                                                            </div>
+                                                            <div class="tick" style="height: 59px;">
+                                                                <p>$20,000</p>
+                                                            </div>
+                                                            <div class="tick" style="height: 59px;">
+                                                                <p>$10,000</p>
+                                                            </div>
+                                                        </div> -->
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            <!-- end progress -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    <style>
+        body,
+.parent {
+    -webkit-font-smoothing: antialiased;
+    font-family: 'Poppins', sans-serif;
+    color: #777;
+    font-size: 14px;
+}
+.main_h {
+    color: #3d405c;
+    font-size:30px;
+    letter-spacing: 9px;
+}
+.card_h1 {
+    color: #3d405c;
+    font-weight: 600;
+    font-size: 18px;
+}
+div.parentCard {
+    overflow: hidden;
+}
+
+div.parentCard:hover {
+    border: 1px solid #d2c8c8;
+}
+
+.parentCArdHeader {
+    background: #F6F6F6;
+}
+
+div.myCardBody {
+    background: #F6F6F6;
+    border-top: none;
+}
+
+.card_boxshadow {
+    box-shadow: 0px 3px 28px rgba(0, 0, 0, 0.08)!important;
+}
+
+div.cardHeaderBG {
+    background: linear-gradient(to left, #4099ff, #6E7FF3);
+    color: wheat;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+img.Chaticon {
+    opacity: 0.7;
+    width: 50px;
+    background: #edebf5;
+    padding: 10px;
+    border-radius: 100%;
+}
+
+p.salesValue {
+    font-size: 28px;
+    color: #5d5b5b;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+}
+
+.increment {
+    font-size: 14px;
+    color: #15cda8;
+    font-family: 'Poppins', sans-serif;
+}
+
+.salecard {
+    border-left: 5px solid #9ba4ff;
+    border-radius: 6px;
+    border-right: 0px solid #fff;
+    border-top: 0px solid #fff;
+    border-bottom: 0px solid #fff;
+}
+
+.Pending_Sales {
+    border-left: 5px solid #ff4981;
+    border-radius: 6px;
+    border-right: 0px solid #fff;
+    border-top: 0px solid #fff;
+    border-bottom: 0px solid #fff;
+}
+
+.Achieved_Sales {
+    border-left: 5px solid#72e4f6;
+    border-radius: 6px;
+    border-right: 0px solid #fff;
+    border-top: 0px solid #fff;
+    border-bottom: 0px solid #fff;
+}
+
+.Future_Sales {
+    border-left: 5px solid#fed378;
+    border-radius: 6px;
+    border-right: 0px solid #fff;
+    border-top: 0px solid #fff;
+    border-bottom: 0px solid #fff;
+}
+
+.content-overlay {
+    background: rgba(0, 0, 0, 0.8);
+    position: absolute;
+    height: 99%;
+    width: 100%;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    opacity: 0;
+    -webkit-transition: all 0.4s ease-in-out 0s;
+    -moz-transition: all 0.4s ease-in-out 0s;
+    transition: all 0.4s ease-in-out 0s;
+    border-radius: 0px;
+}
+
+.fadeIn-bottom {
+    top: 80%;
+}
+
+.content-details {
+    position: absolute;
+    text-align: center;
+    padding-left: 1em;
+    padding-right: 1em;
+    width: 100%;
+    top: 50%;
+    left: 0;
+    opacity: 0;
+    -webkit-transform: translate(-50%, -50%);
+    -moz-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+    transition: all ease-in-out 800ms;
+    -webkit-transition: all ease-in-out 800ms;
+    -moz-transition: all ease-in-out 800ms;
+    -o-transition: all ease-in-out 800ms;
+    -ms-transition: all ease-in-out 800ms;
+    ;
+}
+
+.content-title {
+    color: blanchedalmond;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.content-text {
+    color: #fff;
+    transition-delay: 10s ! important;
+    margin-bottom: 0;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Poppins', sans-serif;
+}
+
+.salesCard:hover .content-overlay {
+    left: 50%;
+    */ opacity: 1 !important;
+    z-index: 999;
+}
+
+.invoice_1:hover .content-details {
+    top: 50%;
+    left: 50%;
+    opacity: 1;
+    color: #999;
+    ;
+}
+
+.invoice_1:hover .content-overlay {
+    opacity: 1 !important;
+    z-index: 999;
+}
+
+.salesCard:hover .content-details {
+    top: 50%;
+    left: 50%;
+    opacity: 1;
+    color: #999;
+    ;
+}
+
+.progressCaption {
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.progress {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+    font-family: 'Poppins', sans-serif;
+}
+
+.inventryCard {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075);
+    font-family: 'Poppins', sans-serif;
+}
+
+div.controls {
+    display: flex;
+    font-family: 'Poppins', sans-serif;
+}
+
+div.controls div.ctrl {
+    width: 20%;
+    padding-left: 15px;
+    padding-right: 15px;
+    font-family: 'Poppins', sans-serif;
+}
+
+div.controls div.ctrl:nth-child(5) {
+    margin-right: 0;
+}
+
+div.ctrl a {
+    text-decoration: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+div.ctrl a span.inventryCaption {
+    color: #444;
+    display: block;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+}
+
+div.ctrl a img {
+    /*opacity:0.5;*/
+    margin-bottom: 10px ! important;
+    width: 100%;
+    padding: 10px;
+}
+
+section.Mysection {
+    margin-bottom: 30px;
+    font-family: 'Poppins', sans-serif;
+}
+
+div.ctrl a:hover .iconsContainer {
+    opacity: 1 ! important;
+    -ms-transform: scale(0.8);
+    /* IE 9 */
+    -webkit-transform: scale(0.8);
+    /* Safari 3-8 */
+    transform: scale(0.8);
+    transition: all ease-in-out 800ms;
+    -webkit-transition: all ease-in-out 800ms;
+    -moz-transition: all ease-in-out 800ms;
+    -o-transition: all ease-in-out 800ms;
+    -ms-transition: all ease-in-out 800ms;
+}
+
+div.ctrl a:not(hover) .iconsContainer {
+    -ms-transform: scale(1);
+    /* IE 9 */
+    -webkit-transform: scale(1);
+    /* Safari 3-8 */
+    transform: scale(1);
+    transition: all ease-in-out 800ms;
+    -webkit-transition: all ease-in-out 800ms;
+    -moz-transition: all ease-in-out 800ms;
+    -o-transition: all ease-in-out 800ms;
+    -ms-transition: all ease-in-out 800ms;
+}
+
+.iconsContainer {
+    width: 65px;
+    height: 65px;
+    background: #eaeaea;
+    margin: auto;
+    border-radius: 100%;
+    margin: auto;
+    margin-bottom: 10px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.secTitle {
+    font-weight: 300;
+    width: auto;
+    color: #5a5858 ! important;
+    padding: 7px 15px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.ProductSection {
+    overflow-x: auto;
+    height: 210px;
+}
+
+.ProductSection figure img {
+    height: 150px;
+    margin-right: 30px;
+}
+
+.invoiceCount {
+    font-size: 30px;
+    font-family: 'Poppins', sans-serif;
+}
+
+.invoice_1 {
+    height: 180px;
+    width: 180px;
+    margin: auto;
+    border-radius: 100%;
+    box-shadow: 0 0.125rem 3.25rem rgba(0, 0, 0, .075);
+    font-family: 'Poppins', sans-serif;
+}
+
+.invoiceCard {
+    background: transparent;
+}
+
+p.info {
+    margin-top: 30%;
+    font-family: 'Poppins', sans-serif;
+}
+
+.completedText {
+    color: #50b6bb;
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pendingText {
+    font-weight: 800;
+    color: #ffaf65;
+    font-family: 'Poppins', sans-serif;
+}
+
+.pendingText {
+    font-weight: 800;
+    color: #ffaf65;
+    font-family: 'Poppins', sans-serif;
+}
+
+.notRaisedText {
+    font-weight: 800;
+    color: #bf5474;
+    font-family: 'Poppins', sans-serif;
+}
+
+.initiatedText {
+    font-weight: 800;
+    color: #7163b7;
+    font-family: 'Poppins', sans-serif;
+}
+
+.notifyIcons {
+    height: 40px;
+    position: absolute;
+    top: -22px;
+//    z-index: 9999;
+}
+
+p.cost {
+    font-size: 14px;
+    color: #222;
+    font-family: 'Poppins', sans-serif;
+}
+
+.YearMonth {
+    color: #c5bcbc;
+    font-weight: bold;
+    font-family: 'Poppins', sans-serif;
+}
+
+section.costInfo p {
+    line-height: 26px;
+    margin-bottom: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+.costCard {
+    margin-bottom: 20px;
+    border-bottom: 5px solid #9ba4ff;
+    border-radius: 6px;
+    border-right: 0px solid #fff;
+    border-top: 0px solid #fff;
+    border-left: 0px solid #fff;
+}
+
+.card_h {
+    
+    color: #3d405c;
+    font-weight: 600;
+    font-size: 13px;
+}
+
+}
+
+.costCard img {
+    height: 40px;
+}
+
+table.myTable thead tr th {
+    border-bottom: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+table.myTable thead tr th,
+table.myTable tbody tr td {
+    vertical-align: middle;
+    text-align: left;
+    border-top: 0;
+    font-size: 13px;
+    font-family: 'Poppins', sans-serif;
+}
+
+table.myTable {
+    color: #737679;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075)!important;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+@media only screen and (max-width:1000px) {
+    div.myView {
+        max-width: 100% ! important;
+    }
+    div.myRow {
+        display: block;
+    }
+}
+
+@media only screen and (max-width:767px) {
+    div.salesCard {
+        margin: 20px 0;
+    }
+}
+
+@media only screen and (max-width:995px) {
+    div.salesCard {
+        margin: 20px 0;
+    }
+    div.productSubCard,
+    div.costAndReport {
+        width: 100%;
+        flex: 0 0 100% ! important;
+        max-width: 100%;
+    }
+    div.controls div.ctrl {
+        width: 50% ! important;
+        margin-right: 0px;
+        margin-bottom: 20px;
+    }
+    div.controls div.ctrl:nth-child(5) {
+        width: 100% ! important;
+    }
+}
+
+@media (max-width:995px) and (min-width:767px) {
+    div.circleCard {
+        width: 50%;
+        flex: 0 0 50% ! important;
+        max-width: 50%;
+    }
+}
+
+@media only screen and (max-width:995px) {
+    div.circleCard {
+        margin: 20px 0;
+    }
+}
+
+@media only screen and (max-width:560px) {
+    table.myTable {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+    }
+}
+
+.progress-circle {
+    position: relative;
+    display: inline-block;
+    margin: 1rem;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background-color: #ebebeb;
+    font-family: 'Poppins', sans-serif;
+}
+
+.progress-circle:after {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    -webkit-animation: colorload 2s;
+    animation: colorload 2s;
+}
+
+.progress-circle span {
+    font-size: 1.5rem;
+    color: #8b8b8b;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    display: block;
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    margin-left: -30px;
+    margin-top: -30px;
+    text-align: center;
+    border-radius: 50%;
+    background: #fff;
+    font-family: 'Poppins', sans-serif;
+    z-index: 1;
+}
+
+.progress-circle span:after {
+    content: "%";
+    font-weight: 600;
+    color: #8b8b8b;
+}
+
+.progress-circle.progress-0:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(90deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-1:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(93.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-2:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(97.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-3:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(100.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-4:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(104.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-5:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(108deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-6:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(111.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-7:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(115.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-8:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(118.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-9:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(122.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-10:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(126deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-11:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(129.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-12:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(133.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-13:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(136.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-14:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(140.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-15:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(129.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-16:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(133.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-17:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(136.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-18:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(140.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-19:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(144deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-20:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(151.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-21:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(158.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-22:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(161.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-23:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(165.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-24:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(169.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-25:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(180deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-26:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(183.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-27:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(187.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-28:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(190.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-29:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(194.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-30:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(198deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-31:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(201.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-32:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(205.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-33:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(208.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-34:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(212.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-35:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(216deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-40:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(234deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-36:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(219.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-37:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(223.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-38:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(226.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-39:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(230.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-41:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(237.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-42:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(241.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-43:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(244.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-44:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(248.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-45:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(252deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-46:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(255.6deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-47:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(259.2deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-48:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(262.8deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-49:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(266.4deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-50:after {
+    background-image: linear-gradient(-90deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-51:after {
+    background-image: linear-gradient(-86.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-52:after {
+    background-image: linear-gradient(-82.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-53:after {
+    background-image: linear-gradient(-79.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-54:after {
+    background-image: linear-gradient(-75.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-55:after {
+    background-image: linear-gradient(-72deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-56:after {
+    background-image: linear-gradient(-68.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-57:after {
+    background-image: linear-gradient(-64.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-58:after {
+    background-image: linear-gradient(-61.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-59:after {
+    background-image: linear-gradient(-57.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-60:after {
+    background-image: linear-gradient(-54deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-61:after {
+    background-image: linear-gradient(-50.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-62:after {
+    background-image: linear-gradient(-46.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-63:after {
+    background-image: linear-gradient(-43.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-64:after {
+    background-image: linear-gradient(-39.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-65:after {
+    background-image: linear-gradient(-36deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-66:after {
+    background-image: linear-gradient(-32.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-67:after {
+    background-image: linear-gradient(-28.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-68:after {
+    background-image: linear-gradient(-25.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-69:after {
+    background-image: linear-gradient(-21.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-70:after {
+    background-image: linear-gradient(-18deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-71:after {
+    background-image: linear-gradient(-14.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-72:after {
+    background-image: linear-gradient(-10.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-73:after {
+    background-image: linear-gradient(-7.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-74:after {
+    background-image: linear-gradient(-3.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-75:after {
+    background-image: linear-gradient(0deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-76:after {
+    background-image: linear-gradient(3.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-77:after {
+    background-image: linear-gradient(7.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-78:after {
+    background-image: linear-gradient(10.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-79:after {
+    background-image: linear-gradient(14.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-80:after {
+    background-image: linear-gradient(18deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-81:after {
+    background-image: linear-gradient(21.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-82:after {
+    background-image: linear-gradient(25.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-83:after {
+    background-image: linear-gradient(28.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-84:after {
+    background-image: linear-gradient(32.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-85:after {
+    background-image: linear-gradient(36deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-86:after {
+    background-image: linear-gradient(39.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-87:after {
+    background-image: linear-gradient(43.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-88:after {
+    background-image: linear-gradient(46.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-89:after {
+    background-image: linear-gradient(50.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-90:after {
+    background-image: linear-gradient(54deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-91:after {
+    background-image: linear-gradient(57.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-92:after {
+    background-image: linear-gradient(61.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-93:after {
+    background-image: linear-gradient(64.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-94:after {
+    background-image: linear-gradient(68.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-95:after {
+    background-image: linear-gradient(72deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-96:after {
+    background-image: linear-gradient(75.6deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-97:after {
+    background-image: linear-gradient(79.2deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-98:after {
+    background-image: linear-gradient(82.8deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-99:after {
+    background-image: linear-gradient(86.4deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.progress-100:after {
+    background-image: linear-gradient(90deg, #66b8ff 50%, transparent 50%, transparent), linear-gradient(270deg, #66b8ff 50%, #ebebeb 50%, #ebebeb);
+}
+
+@-webkit-keyframes colorload {
+    0% {
+        opacity: 0;
+        transform: rotate(0deg);
+    }
+    100% {
+        opacity: 1;
+        transform: rotate(360deg);
+    }
+}
+
+.progress-circle.pending:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(180deg, #ff668c 50%, #ebebeb 50%, #ebebeb);
+}
+
+.progress-circle.success:after {
+    background-image: linear-gradient(90deg, #ebebeb 50%, transparent 50%, transparent), linear-gradient(180deg, #5fb959 50%, #ebebeb 50%, #ebebeb);
+}
+
+#q-graph {
+    display: block;
+    /* fixes layout wonkiness in FF1.5 */
+    position: relative;
+    width: 600px;
+    height: 332px;
+    margin: 1.1em 0 0;
+    padding: 0;
+    background: transparent;
+    font-size: 11px;
+}
+
+#q-graph caption {
+    caption-side: top;
+    width: 600px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    top: -40px;
+    position: relative;
+    z-index: 10;
+    font-weight: bold;
+}
+
+#q-graph tr,
+#q-graph th,
+#q-graph td {
+    position: absolute;
+    bottom: 0;
+    width: 150px;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+#q-graph td {
+    transition: all 0.3s ease;
+}
+
+#q-graph td:hover {
+    background-color: #4d4d4d;
+    opacity: 0.9;
+    color: white;
+}
+
+#q-graph thead tr {
+    left: 100%;
+    top: 50%;
+    bottom: auto;
+    margin: -2.5em 0 0 5em;
+}
+
+#q-graph thead th {
+    width: 7.5em;
+    height: auto;
+    padding: 0.5em 1em;
+}
+
+#q-graph thead th.sent {
+    top: 0;
+    left: -15px;
+    line-height: 3;
+}
+
+#q-graph thead th.paid {
+    top: 2.75em;
+    line-height: 3;
+    left: -13px;
+}
+
+#q-graph tbody tr {
+    height: 296px;
+    padding-top: 2px;
+    border-right: 1px dotted #c4c4c4;
+    color: #aaa;
+}
+
+#q-graph #q1 {
+    left: 0;
+}
+
+#q-graph #q2 {
+    left: 150px;
+}
+
+#q-graph #q3 {
+    left: 300px;
+}
+
+#q-graph #q4 {
+    left: 450px;
+    border-right: none;
+}
+
+#q-graph tbody th {
+    bottom: -1.75em;
+    vertical-align: top;
+    font-weight: normal;
+    color: #333;
+}
+
+#q-graph .bar {
+    width: 52px;
+    border: 1px solid;
+    border-bottom: none;
+    color: #000;
+}
+
+#q-graph .bar p {
+    margin: 5px 0 0;
+    padding: 0;
+    opacity: 0.4;
+}
+
+#q-graph .sent {
+    left: 46px;
+    background-color: #39cccc;
+    border-color: transparent;
+}
+
+#q-graph .paid {
+    left: 111px;
+    background-color: #7fdbff;
+    border-color: transparent;
+}
+
+#ticks {
+    position: relative;
+    top: -300px;
+    left: 2px;
+    width: 596px;
+    height: 300px;
+    z-index: 1;
+    margin-bottom: -300px;
+    font-size: 10px;
+}
+
+#ticks .tick {
+    position: relative;
+    border-bottom: 1px dotted #c4c4c4;
+    width: 600px;
+    left: 35px;
+}
+
+#ticks .tick p {
+    position: absolute;
+    left: -5em;
+    top: -0.8em;
+    margin: 0 0 0 0.5em;
+}
+    </style>
+</html>
+<%
+
+}%>
