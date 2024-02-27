@@ -4,7 +4,7 @@ const cNumber = ZDK.Page.getField("Companies_House_Number").getValue();
 
 //Now Execute the Custom Crm Rest Api to fetch Details From Endole
 let companyDetails = ZDK.HTTP.request({
-    url: "https://www.zohoapis.eu/crm/v2/functions/getQuoteSubject/actions/execute?auth_type=apikey&zapikey=1003.5e97440fc9d50a93d9612e103ddaa197.6b1ed38e8d8975498615b71c20daab64",
+    url: [your Rest Api ],
     method: "POST",
     parameters: {
             action: "getDetailsFromEndole",
