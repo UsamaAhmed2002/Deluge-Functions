@@ -1,0 +1,43 @@
+
+//First Get the Company Number From Field
+const cNumber = ZDK.Page.getField("Companies_House_Number").getValue();
+
+//Now Execute the Custom Crm Rest Api to fetch Details From Endole
+let companyDetails = ZDK.HTTP.request({
+    url: "https://www.zohoapis.eu/crm/v2/functions/getQuoteSubject/actions/execute?auth_type=apikey&zapikey=1003.5e97440fc9d50a93d9612e103ddaa197.6b1ed38e8d8975498615b71c20daab64",
+    method: "POST",
+    parameters: {
+            action: "getDetailsFromEndole",
+            companyNumber:cNumber
+}
+});
+//Now  parse the Response
+let response = companyDetails.getResponse();
+parsedresponse = JSON.parse(response);
+//Check if we successfully Recieved the Response
+if (parsedresponse.code != null && parsedresponse.code == "success" && parsedresponse.details != null) {
+    //Continue updating the Fields
+    const output = parsedresponse.details.output;
+    companyDetails = JSON.parse(output)
+    const endoleData = companyDetails.endole;
+    log(endoleData)
+    // Accessing values using dot notation
+    const cashInBank = endoleData["Cash in Bank"];
+    const companyName = endoleData["Company Name"];
+    const confirmation = endoleData["Confirmation"];
+    const employees = endoleData["Employees"];
+    const incorporationDate = endoleData["Incorporation Date"];
+    const netAssets = endoleData["Net Assets"];
+    const status = endoleData["Status"];
+    const totalAssets = endoleData["Total Assets"];
+    const turnover = endoleData["Turnover"];
+     ZDK.Page.getField("Cash_in_Bank").setValue(cashInBank);
+     ZDK.Page.getField("Account_Name").setValue(companyName);
+     ZDK.Page.getField("Employees").setValue(employees);
+     ZDK.Page.getField("Status").setValue(status);
+     ZDK.Page.getField("Confirmation").setValue(confirmation);
+     ZDK.Page.getField("Incorporation_Date").setValue(incorporationDate);
+     ZDK.Page.getField("Net_Assets").setValue(netAssets);
+     ZDK.Page.getField("Total_Assets").setValue(totalAssets);
+     ZDK.Page.getField("Turnover").setValue(turnover);
+}
