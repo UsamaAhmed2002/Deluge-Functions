@@ -1,0 +1,157 @@
+logs = Map();
+accountID = 673707000000505012;
+accountDetails = zoho.crm.getRecordById("Accounts",accountID);
+clientID=accountDetails.getJSON("Super_OPS_ID");
+contactDetails = zoho.crm.getRelatedRecords("Contacts","Accounts",accountID);
+//=====================================
+//create data Map for creating or Update Client.
+clientDataMap = Map();
+clientDataMap.put("name",accountDetails.getJSON("Account_Name"));
+clientDataMap.put("stage","Active");
+clientDataMap.put("status","Paid");
+clientDataMap.put("accountManager",{"userId":8977768284745887744});
+//=====================================
+//Now create header Map for Super Ops
+headersMap = Map();
+headersMap.put("Authorization","Bearer " + zoho.crm.getOrgVariable("superOpsAPIKey"));
+headersMap.put("CustomerSubDomain","broadband9ltd");
+//===================================
+//Now dataMap Map
+dataMap = Map();
+inputVariables = {"input":clientDataMap};
+dataMap.put("variables",inputVariables);
+//===================================
+//Now Create or Update the  Client
+if(clientID != null)
+{
+	//update the client
+	query = "mutation updateClient($input: UpdateClientInput!) {updateClient(input: $input) {accountId name stage status accountManager }}";
+	clientDataMap.put("accountId",accountDetails.getJSON("Super_OPS_ID").toLong());
+	inputVariables = {"input":clientDataMap};
+	dataMap.put("variables",inputVariables);
+	dataMap.put("query",query);
+	info dataMap;
+	superOpsUpdateClient = invokeurl
+	[
+		url :"https://api.superops.ai/msp"
+		type :POST
+		parameters:dataMap.toString()
+		headers:headersMap
+	];
+	logs.put("superOps Client Update",superOpsUpdateClient);
+}
+else
+{
+	query = "mutation createClient($input: CreateClientInput!) {createClient(input: $input) { name stage status accountManager}}";
+	dataMap.put("query",query);
+	//create the Client
+	superOpsCreateClient = invokeurl
+	[
+		url :"https://api.superops.ai/msp"
+		type :POST
+		parameters:dataMap.toString()
+		headers:headersMap
+	];
+	logs.put("superOps Client",superOpsCreateClient);
+	if(superOpsCreateClient.getJSON("data").getJSON("createClient") != null)
+	{
+		clientID = superOpsCreateClient.getJSON("data").getJSON("createClient").getJSON("accountID");
+		logs.put("crm update",zoho.crm.updateRecord("Accounts",accountID,{"Super_OPS_ID":clientID}));
+	}
+}
+//==========================
+SuperOPSClientSiteID=accountDetails.getJSON("SuperOPSClientSiteID");
+//Now Create Client Site
+if(SuperOPSClientSiteID==null){
+	clientSiteMap=Map();
+	clientSiteMap.put("name","Head Office");
+	clientSiteMap.put("working24x7",false);
+	clientSiteMap.put("timezoneCode","Europe/London");
+	clientSiteMap.put("businessHour",{"day": "MONDAY", "start": "09:00", "end": "18:00"});
+	clientSiteMap.put("client",{"accountId":clientID});
+	//Now create a Client Site
+	createClientSiteQuery = "mutation createClientSite($input: CreateClientSiteInput!) {createClientSite(input: $input) { id name businessHour {day start end} timezoneCode working24x7  client}}";
+	dataMap.clear();
+	inputVariables.clear();
+	inputVariables={"input":clientSiteMap};
+	
+	dataMap.put("query",createClientSiteQuery);
+	dataMap.put("variables",inputVariables);
+	//create the Client
+	superOpsCreateClientSite = invokeurl
+	[
+		url :"https://api.superops.ai/msp"
+		type :POST
+		parameters:dataMap.toString()
+		headers:headersMap
+	];
+	info superOpsCreateClientSite;
+	logs.put("superOps Client Site",superOpsCreateClientSite);
+	if(superOpsCreateClientSite.get("data") != null)
+	{
+		SuperOPSClientSiteID = superOpsCreateClientSite.getJSON("data").getJSON("createClientSite").getJSON("id");
+		logs.put("crm update",zoho.crm.updateRecord("Accounts",accountID,{"SuperOPSClientSiteID":SuperOPSClientSiteID}));
+	}	
+}
+//=================================================================================
+//Now Create Client user and asssociate it with the Client
+for each contact in contactDetails{
+	if(contact.getJSON("isPrimary")==true){
+		contactDataMap=Map();
+		contactDataMap.put("firstName",contactDetails.getJSON("First_Name"));
+		contactDataMap.put("lastName",contactDetails.getJSON("Last_Name"));
+		contactDataMap.put("email",contactDetails.getJSON("Email"));
+		contactDataMap.put("contactNumber",contactDetails.getJSON("Phone"));
+		contactDataMap.put("reportingManager",{"userId":8977768284745887744});
+		contactDataMap.put("role",{"roleId":4});
+		contactDataMap.put("site",{"id":SuperOPSClientSiteID});
+		contactDataMap.put("client",{"accountId":clientID});
+// 		contactDataMap.put("addAssociations",{"client":{"accountId":clientID},"site":{"id":SuperOPSClientSiteID}});
+		if(contact.getJSON("Super_OPS_ID") != null)
+			{
+			//update the client
+			query = "mutation updateClientUser($input: UpdateClientUserInput!) {updateClientUser(input: $input) {userId firstName lastName name email contactNumber reportingManager client site }}";
+			contactDataMap.put("userId",contact.getJSON("Super_OPS_ID"));
+			inputVariables.clear();
+			inputVariables = {"input":contactDataMap};
+			dataMap.clear();
+			dataMap.put("variables",inputVariables);
+			dataMap.put("query",query);
+			info dataMap;
+			superOpsUpdateClient = invokeurl
+			[
+				url :"https://api.superops.ai/msp"
+				type :POST
+				parameters:dataMap.toString()
+				headers:headersMap
+			];
+			logs.put("superOps Client user Update",superOpsUpdateClient);
+}
+		else
+			{
+			createClientUserQuery = "mutation createClientUser($input: CreateClientUserInput!) {createClientUser(input: $input) {userId firstName lastName email site role client}}";
+			inputVariables.clear();
+			inputVariables = {"input":contactDataMap};
+			dataMap.clear();
+			dataMap.put("variables",inputVariables);
+			dataMap.put("query",createClientUserQuery);
+			info dataMap;
+			//create the Client
+			superOpsCreateuser = invokeurl
+			[
+				url :"https://api.superops.ai/msp"
+				type :POST
+				parameters:dataMap.toString()
+				headers:headersMap
+			];
+			logs.put("superOps User Create",superOpsCreateuser);
+			if(superOpsCreateuser.getJSON("data")!= null)
+			{
+				userId = superOpsCreateuser.getJSON("data").getJSON("createClientUser").getJSON("userId");
+				logs.put("crm update",zoho.crm.updateRecord("Contacts",contact.getJSON("id"),{"Super_OPS_ID":userId}));
+			}
+}
+	}
+}
+info logs;
+return "";
