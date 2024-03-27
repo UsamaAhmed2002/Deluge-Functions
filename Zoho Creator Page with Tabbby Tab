@@ -1,0 +1,172 @@
+<%{
+	%>
+<style>
+  .tabbed {
+overflow-x: hidden;
+/* so we could easily hide the radio inputs */
+}
+
+.tab-container {
+display: inherit;
+margin: 0 auto;
+}
+
+.tabRadio {
+/* hiding the inputs */
+display: none;
+}
+
+.tabs {
+display: flex;
+align-items: stretch;
+text-align: center;
+list-style: none;
+padding: 0;
+margin: 0;
+}
+
+.tabLabel {
+display: block;
+margin-bottom: -1px;
+padding: 12px 15px;
+border: 1px solid transparent;
+color: #666;
+font-size: 16px;
+font-weight: 600;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.tab:hover label {
+border-bottom-color: #3987D9;
+color: #3987D9;
+}
+
+.tab-content {
+opacity: 0;
+height: 0vh;
+overflow: auto;
+}
+
+.embdDIv {
+height: 77vh !important;
+}
+
+
+/* As we cannot replace the numbers with variables or calls to element properties, the number of this selector parts is our tab count limit */
+
+.tabRadio:nth-of-type(1):checked~.tabs .tab:nth-of-type(1) label,
+.tabRadio:nth-of-type(2):checked~.tabs .tab:nth-of-type(2) label,
+.tabRadio:nth-of-type(3):checked~.tabs .tab:nth-of-type(3) label,
+.tabRadio:nth-of-type(4):checked~.tabs .tab:nth-of-type(4) label,
+.tabRadio:nth-of-type(5):checked~.tabs .tab:nth-of-type(5) label,
+.tabRadio:nth-of-type(6):checked~.tabs .tab:nth-of-type(6) label{
+border-top-color: #fff;
+border-bottom-color: #3987D9;
+background: #fff;
+color: #3987D9;
+}
+
+.tabRadio:nth-of-type(1):checked~.tab-content:nth-of-type(1),
+.tabRadio:nth-of-type(2):checked~.tab-content:nth-of-type(2),
+.tabRadio:nth-of-type(3):checked~.tab-content:nth-of-type(3),
+.tabRadio:nth-of-type(4):checked~.tab-content:nth-of-type(4),
+.tabRadio:nth-of-type(5):checked~.tab-content:nth-of-type(5),
+.tabRadio:nth-of-type(6):checked~.tab-content:nth-of-type(6){
+border: 1px solid #e5e5e5;
+height: 77vh;
+border-radius: 10px;
+opacity: 1;
+}
+
+.no_record_wrapper .zc-importdata-report,
+.no_record_wrapper span {
+display: none !important;
+}
+
+.mainDIv {
+padding: 20px;
+box-size: border-boxing;
+margin: 0 auto;
+}
+
+.mobDiv {
+display: none;
+}
+
+@media only screen and (max-width: 600px) {
+.webDiv {
+display: none;
+}
+.mobDiv {
+display: block;
+}
+}
+
+.view-outer-wrapper .view-header+.reportfullwidth.custom-report {
+background-color: #fff !important;
+}
+
+div[elname='zc-view-component'] {
+border: none !important;
+}
+
+div[elname='zc-view-component'] .zc-card-report {
+background-color: #fff !important;
+border-top: 1px solid #e5e5e5 !important;}
+
+.p0
+{
+	padding-left:3%;
+}
+.steps_div { width:70%; display:inline-block; padding:5px; border-radius:12px; box-shadow:0px 0px 1px 1px #cae5ff; text-align:left; margin-top:15px; }.separated_div { width:80%; } .steps_head { color: #358fe1; font-size:15px; margin: 10px 15px 10px 15px; } .steps_point { font-size:15px; margin: 10px 15px 10px 15px; }
+</style>
+<div class="mainDIv webDiv">
+<h3 style="margin:0;font-size:18px; font-weight:400;">Payroll Processing</h3><br>
+
+   <div class="tabbed">
+      <input checked="" name="css-tabs" class="tabRadio" id="tab1" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab2" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab3" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab4" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab5" type="radio">
+ <input name="css-tabs" class="tabRadio" id="tab6" type="radio">
+ 
+      <ul class="tabs">
+         <div class="tab-container">
+		 <li class="tab"><label for="tab1" class="tabLabel">Before Payroll Process</label></li>
+<li class="tab"><label for="tab2" class="tabLabel">Pay-cycles Master</label></li>
+<li class="tab"><label for="tab3" class="tabLabel">Pay-registry Master Reports</label></li>
+<li class="tab"><label for="tab4" class="tabLabel">Detailed Payroll Reports</label></li>
+<li class="tab"><label for="tab5" class="tabLabel">After Payroll Process</label></li>
+
+
+         </div>
+      </ul>
+	  <div class="tab-content">
+         <div params="zc_Header=true&amp;zc_MoreAction=true" formlinkname="Before_Payroll_Process" elname="zc-component" class="embdDIv divEmbedContainer" iscontentloaded="true">
+</div>  
+      </div>
+ <div class="tab-content">
+         <div params="zc_Header=true&zc_MoreAction=true" viewlinkname="All_Pay_Cycles" elname="zc-component" class="embdDIv divEmbedContainer" iscontentloaded="true">
+</div>  
+      </div>
+ <div class="tab-content">
+         <div params="zc_Header=true&amp;zc_MoreAction=true" viewlinkname="All_Monthly_Pay_Registers" elname="zc-component" class="embdDIv divEmbedContainer" iscontentloaded="true">
+</div>  
+      </div>
+ <div class="tab-content">
+         <div params="zc_Header=true&amp;zc_MoreAction=true" viewlinkname="Detailed_Payroll_Reports" elname="zc-component" class="embdDIv divEmbedContainer" iscontentloaded="true">
+</div>  
+      </div>
+	  
+	  <div class="tab-content">
+         <div params="zc_Header=true&amp;zc_MoreAction=true" formlinkname="Generate_Provision" elname="zc-component" class="embdDIv divEmbedContainer" iscontentloaded="true">
+</div>  
+      </div>
+	  
+   </div>
+</div>
+<%
+
+}%>
