@@ -1,0 +1,24 @@
+
+/** 
+ * log("sample logging statement") --> can be used to print any data in the browser console.
+ * ZDK module can be used for customising the UI and other functionalities.
+ * return false to prevent <SAVE> action
+**/
+var accountId = ZDK.Page.getField("Account_Name").getValue() // Assuming there's a getValue() method to retrieve the value
+accountDetails = ZDK.Apps.CRM.Accounts.fetchById(accountId.id);
+if (accountDetails != null) {
+Billing_1st_Line=accountDetails.Billing_1st_Line
+Billing_2nd_Line=accountDetails.Billing_2nd_Line
+Billing_Country=accountDetails.Billing_Country
+Billing_Locality=accountDetails.Billing_Locality
+Billing_Post_Code=accountDetails.Billing_Post_Code
+Billing_Region=accountDetails.Billing_Region
+
+    ZDK.Page.getField("Billing_Street").setValue(Billing_1st_Line);
+    ZDK.Page.getField("Billing_2nd_Line").setValue(Billing_2nd_Line);
+    ZDK.Page.getField("Billing_Country").setValue(Billing_Country);
+    ZDK.Page.getField("Billing_Locality").setValue(Billing_Locality);
+    ZDK.Page.getField("Billing_Code").setValue(Billing_Post_Code);
+    ZDK.Page.getField("Billing_Region").setValue(Billing_Region);
+}
+
