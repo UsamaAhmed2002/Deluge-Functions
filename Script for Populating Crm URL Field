@@ -1,0 +1,1 @@
+"<a href=\"" + supplierDetails.Website + "\">" + url.getJSON("URL_Name") + "</a>";
