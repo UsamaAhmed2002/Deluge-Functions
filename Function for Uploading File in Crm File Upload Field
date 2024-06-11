@@ -1,0 +1,44 @@
+void FOR_TESTING_PURPOSE()
+{
+		logs=Map();
+supplierDetails=Supplier[ID==4548921000000622015];
+//===================Code For Uploading the VAT Doc
+//fisrt Construct Download the File From Creator
+creatorDownloadFileUrl = " https://creator.zoho.com/api/v2.1/najemabahussains/purchase-process/report/All_Suppliers/" + supplierDetails.ID + "/CR_VAT_Document/download";
+	downloadedFile = invokeurl
+	[
+		url :creatorDownloadFileUrl
+		type :GET
+		connection:"creator"
+	];
+logs.put("if is File",downloadedFile.isFile());
+if(downloadedFile.isFile() && supplierDetails.Supplier_CRM_ID!="")
+{
+	//Now Set te File Param name
+	downloadedFile.setParamName("file");
+	//Uploading the File to ZFS
+	uploadedFileRes = invokeurl
+	[
+		url :" https://www.zohoapis.com/crm/v6/files"
+		type :POST
+		files:downloadedFile
+		connection:"zohocrm"
+	];
+
+	logs.put("Uploaded File",uploadedFileRes);
+	if(uploadedFileRes.toString().contains("SUCCESS"))
+	{
+		fileid = uploadedFileRes.getJSON("data").get(0).getJSON("details").getJSON("id");
+		filelist = List();
+		fmp = Map();
+		fmp.put("file_id",fileid);
+		filelist.add(fmp);
+		mp = Map();
+		mp.put("CR_VAT_Document",filelist);
+		updateRec = zoho.crm.updateRecord("Vendors",supplierDetails.Supplier_CRM_ID.toLong(),mp);
+		info updateRec;
+		logs.put("uploaded File in Crm",updateRec);
+}
+}
+info logs;
+}
