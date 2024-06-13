@@ -1,0 +1,135 @@
+
+logs = Map();
+customerID = customer.get("contact_id");
+companyName = customer.get("company_name");
+organizationID = organization.get("organization_id");
+booksBaseUrl = "https://www.zohoapis.sa/books/v3/";
+//Getting Customer Details
+customerDetails = invokeurl
+[
+	url :booksBaseUrl + "contacts/" + customerID + "?organizaton_id=" + organizationID
+	type :GET
+	connection:"books"
+];
+customerDetails = customerDetails.getJSON("contact");
+logs.put("customer Details",customerDetails);
+//Creating Data map for CRM
+crmDataMap = Map();
+crmDataMap.put("Account_Name",customerDetails.getJSON("company_name"));
+crmDataMap.put("Client_Name_Arabic",customerDetails.getJSON("contact_name_sec_lang"));
+if(customerDetails.getJSON("tax_treatment") == "vat_not_registered")
+{
+	taxTreatment = "VAT Not Registered";
+}
+else if(customerDetails.getJSON("tax_treatment") == "vat_registered")
+{
+	taxTreatment = "VAT Registered";
+}
+else if(customerDetails.getJSON("tax_treatment") == "gcc_vat_not_registered")
+{
+	taxTreatment = "GCC VAT Not Registered";
+}
+else if(customerDetails.getJSON("tax_treatment") == "gcc_vat_registered")
+{
+	taxTreatment = "GCC VAT Registered";
+}
+else if(customerDetails.getJSON("tax_treatment") == "non_gcc")
+{
+	taxTreatment = "Non GCC";
+}
+crmDataMap.put("Tax_Treatment",taxTreatment);
+crmDataMap.put("Currency",customerDetails.getJSON("currency_code"));
+crmDataMap.put("Tax_No",customerDetails.getJSON("tax_reg_no"));
+//==================================================================================
+//Now Mapping for Addresses
+if(customerDetails.getJSON("billing_address") != null)
+{
+	billingAddress = customerDetails.getJSON("billing_address");
+	crmDataMap.put("Billing_Street",billingAddress.getJSON("street2"));
+	crmDataMap.put("Billing_Attention",billingAddress.getJSON("attention"));
+	crmDataMap.put("Billing_City",billingAddress.getJSON("city"));
+	crmDataMap.put("Billing_State",billingAddress.getJSON("state"));
+	crmDataMap.put("Billing_Country",billingAddress.getJSON("country"));
+}
+//=========Mappping for Shipping Address
+if(customerDetails.getJSON("shipping_address") != null)
+{
+	shippingAddress = customerDetails.getJSON("shipping_address");
+	crmDataMap.put("Shipping_Street",shippingAddress.getJSON("street2"));
+	crmDataMap.put("Shipping_Attention",shippingAddress.getJSON("attention"));
+	crmDataMap.put("Shipping_City",shippingAddress.getJSON("city"));
+	crmDataMap.put("Shipping_State",shippingAddress.getJSON("state"));
+	crmDataMap.put("Shipping_Country",shippingAddress.getJSON("country"));
+}
+crmDataMap.put("BooksID",customerDetails.getJSON("contact_id"));
+//==========================================================Now Check if the Account Already Exists in CRm
+crmAccountID = customerDetails.getJSON("cf_crm_id");
+if(crmAccountID != null)
+{
+	//Update the account
+	logs.put("Updated Account",zoho.crm.updateRecord("Accounts",crmAccountID.toLong(),crmDataMap));
+}
+else
+{
+	//Create the Account
+	createdAccount = zoho.crm.createRecord("Accounts",crmDataMap);
+	//Now check if the account is Created Successfully then Push the Crm account id to CF in Boooks 
+	if(createdAccount.getJSON("id") != null)
+	{
+		crmAccountID = createdAccount.getJSON("id");
+		booksDataMap = Map();
+		cfList = List();
+		crmIDCFMap = Map();
+		crmIDCFMap.put("index",1);
+		crmIDCFMap.put("value",crmAccountID);
+		cfList.add(crmIDCFMap);
+		booksDataMap.put("custom_fields",cfList);
+		updatedCustomer = invokeurl
+		[
+			url :booksBaseUrl + "contacts/" + customerID + "?organization_id=" + organizationID
+			type :PUT
+			parameters:booksDataMap.toString()
+			connection:"books"
+		];
+		logs.put("Updated Customer",updatedCustomer);
+	}
+}
+//=================================================================================================================
+//===================Now Contact Persons Sync Script Starts here
+//Lets First Fetch all Contact persons of this Custoemr from Books
+contactPersons=customerDetails.getJSON("contact_persons");
+//Now Fetch the contacts of this Account From Crm
+realtedContactsfromCrm=zoho.crm.getRelatedRecords("Contacts","Accounts",crmAccountID);
+
+//Now Loop through Each Contact Person and Contact and then Create/Update Accordingly
+contactsLogsList=List();
+for each contactPerson in contactPersons{
+	
+	crmContactDataMap=Map();
+	crmContactDataMap.put("Account_Name",{"id":crmAccountID});
+	crmContactDataMap.put("Email",contactPerson.getJSON("email"));
+	crmContactDataMap.put("First_Name",contactPerson.getJSON("first_name"));
+	crmContactDataMap.put("Last_Name",contactPerson.getJSON("last_name"));
+	crmContactDataMap.put("Salutation",contactPerson.getJSON("salutation"));
+	crmContactDataMap.put("BooksID",contactPerson.getJSON("contact_person_id"));
+	crmContactDataMap.put("Phone",contactPerson.getJSON("phone"));
+	crmContactDataMap.put("Mobile",contactPerson.getJSON("mobile"));
+	crmContactDataMap.put("Department",contactPerson.getJSON("Department"));
+	crmContactDataMap.put("Designation",contactPerson.getJSON("Designation"));
+	crmContactDataMap.put("Skype_ID",contactPerson.getJSON("skype"));
+	for each contact in realtedContactsfromCrm{
+		
+		contactLogMap=Map();
+		
+		if(contactPerson.getJSON("email")==contact.getJSON("Email")){
+			updatedContact=zoho.crm.updateRecord("Contacts",contact.getJSON("id"),crmContactDataMap);
+			contactLogMap.put("Updated Contact",updatedContact);
+		}else{
+			createdContact=zoho.crm.createRecord("Contacts",crmContactDataMap);
+			contactLogMap.put("Created Contact"+crmContactDataMap);
+		}
+		contactsLogsList.add(contactLogMap);
+	}
+}
+logs.put("Contact Persons Logs",contactsLogsList);
+info logs;
