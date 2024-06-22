@@ -1,0 +1,41 @@
+recordMap1.put("Item_Details",lineItems);
+recordMap1.put("Sub_Total",invoiceDetails.getJSON("Sub_Total1"));
+recordMap1.put("Discount_Total",invoiceDetails.getJSON("Discount_Total"));
+recordMap1.put("Tax_Total1",invoiceDetails.getJSON("Grand_Total1"));
+recordMap1.put("Grand_Total",invoiceDetails.getJSON("Grand_Total").round(2));
+recordMap1.put("Invoice_Owner",zoho.loginuser);
+logs.put("Items Details",itemsLogsList);
+dataList.add(recordMap1);
+payload.put("data",dataList);
+resultMap = Map();
+resultMap.put("fields",{"ID","Subject_field","Invoice_No"});
+resultMap.put("message",true);
+payload.put("result",resultMap);
+logs.put("Invoice Payload",payload);
+try 
+{
+	createdResponse = invokeurl
+	[
+		url :creatorBaseUrl + "form/Invoice"
+		type :POST
+		parameters:payload.toString()
+		connection:"zcreator"
+	];
+	logs.put("Created in Creator",createdResponse);
+	if(createdResponse.getJSON("result") != null)
+	{
+		if(createdResponse.getJSON("result").size() > 0)
+		{
+			result = createdResponse.getJSON("result").get(0);
+			if(result.getJSON("message") == "Invoice Added Successfully")
+			{
+				invoiceID = result.getJSON("data").getJSON("ID");
+				logs.put("Updated in Crm",zoho.crm.updateRecord("Invoices",id,{"CreatorID":invoiceID}));
+			}
+		}
+	}
+}
+catch (e)
+{
+	logs.put("Exception while making the API request.",e);
+}
