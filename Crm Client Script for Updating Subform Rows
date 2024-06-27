@@ -1,0 +1,33 @@
+var exchangeConversion = ZDK.Page.getField("Exchange_Conversion").getValue(); 
+console.log(exchangeConversion);
+
+var subformRows = ZDK.Page.getField("Quoted_Items").getValue();
+console.log(subformRows);
+var subform3 = [];
+if (subformRows != null) {
+    // loop through subform rows
+    for (var i = 0; i < subformRows.length; i++) {
+        // convert the subform row to an object
+         const line_item = JSON.parse(JSON.stringify(subformRows[i]));
+        console.log(line_item)
+        const unitCost = line_item.Unit_Cost ? line_item.Unite_Cost : 0 
+        const listPrice=unitCost * exchangeConversion ? exchangeConversion : 0
+        const updatedLineItem = {
+            "Description": line_item.Description,
+            "Service_Category": line_item.Service_Category,
+            "Line_Tax": line_item.Line_Tax,
+            "Product_Name": line_item.Product_Name,
+            "Quantity": line_item.Quantity,
+            "Excahnge_Rate": exchangeConversion,
+            "Unit_Cost": line_item.Unit_Cost,
+            "List_Price": listPrice,
+            "WHT_5": line_item.WHT_5,
+            "Margin": line_item.Margin
+        };
+        subform3.push(updatedLineItem);
+
+    }
+}
+ZDK.Page.getForm().setValues({ 'Quoted_Items': null })
+ZDK.Page.getForm().setValues({ 'Quoted_Items': subform3 })
+
