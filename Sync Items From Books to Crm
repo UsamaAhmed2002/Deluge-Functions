@@ -1,0 +1,55 @@
+logs=Map();
+itemID = item.get("item_id");
+organizationID = organization.get("organization_id");
+booksBaseUrl="https://www.zohoapis.sa/books/v3/";
+
+itemDetails=invokeUrl[
+	url:booksBaseUrl+"items/"+itemID+"?organization_id="+organizationID
+	type:GET
+	connection:"books"
+];
+itemDetails=itemDetails.getJSON("item");
+logs.put("Item Details",itemDetails);
+//====================================Crm Data Map 
+crmDataMap=Map();
+crmDataMap.put("Product_Name",itemDetails.getJSON("name"));
+crmDataMap.put("Unit_Price",itemDetails.getJSON("rate"));
+crmDataMap.put("Usage_Unit",itemDetails.getJSON("unit"));
+crmDataMap.put("Status","Active");
+if(itemDetails.getJSON("tax_name").containsIgnoreCase("Standard Rated")){
+	crmDataMap.put("Tax",["Standard Rated - 15.0 %"]);
+}
+crmDataMap.put("Description",itemDetails.getJSON("description"));
+crmDataMap.put("BooksID",itemID);
+if(itemDetails.getJSON("custom_field_hash")!=null){
+	itemCrmID=itemDetails.getJSON("custom_field_hash").getJSON("cf_crmid");
+}
+logs.put("item crm id",itemCrmID);
+if(itemCrmID==null){
+	//creating in crm
+	createdItemInCrm=zoho.crm.createRecord("Products", crmDataMap);
+	logs.put("Created item in crm",createdItemInCrm);
+	if(createdItemInCrm.getJSON("id")!=null){
+		itemCrmID=createdItemInCrm.getJSON("id");
+		//Now updating id in books
+		cfList=List();
+		cfMap=Map();
+		cfMap.put("api_name","cf_crmid");
+		cfMap.put("value",itemCrmID);
+		cfList.add(cfMap);
+		booksDataMap=Map();
+		booksDataMap.put("custom_fields",cfList);
+		updatedinBooks=invokeUrl[
+			url:booksBaseUrl+"items/"+itemID+"?organization_id="+organizationID
+			type:PUT
+			parameters:booksDataMap.toString()
+			connection:"books"
+		];
+		logs.put("Updated id in books",updatedinBooks);
+	}
+}else{
+	//update in crm
+	updatedInCrm=zoho.crm.updateRecord("Products",itemCrmID.toLong(),crmDataMap);
+	logs.put("Updated item in crm",updatedInCrm);
+}
+	info logs;
