@@ -1,0 +1,38 @@
+//===================================================================================
+if(accountDetails.getJSON("National_Address")!=null ){
+	fileID=accountDetails.getJSON("National_Address").get(0).getJSON("file_Id");
+	downloadUrl="https://www.zohoapis.sa/crm/v2/files?id="+fileID;
+	downloadedFile=invokeUrl[
+		url:downloadUrl
+		type:GET
+		connection:"crm"
+	];
+	logs.put("Downloaded File",downloadedFile.isFile());
+	logs.put("Downloaded File",downloadedFile);
+downloadedFile.setParamName("document");
+cfID="3209000000011445";
+attachmentMap = Map();
+result = invokeurl
+[
+url :booksBaseUrl+"customfields/" + cfID + "/adddocument?organization_id=" + booksOrgID
+type :POST
+files:downloadedFile
+connection:"books"
+];
+info "result=" + result;
+code = result.get("code");
+if(code == 0)
+{
+	result = result.get("documents");
+	docID = result.get("document_id");
+	attachmentMap.put("3209000000011445",docID);
+}
+docID = attachmentMap.get("3209000000011445");
+if(!docID.isNull())
+{
+	cMap = Map();
+	cMap.put("api_name","cf_national_address");
+	cMap.put("value",docID);
+	cfList.add(cMap);
+}
+}
