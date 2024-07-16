@@ -1,0 +1,8 @@
+itemPhysicalTonalityCriteria = "Tonality_Code==\"" + itemTonalityRefNo + "\"" + " && Item_tagged==" + itemCreatorID.toLong();
+	itemPhysicalTonalityDetails = invokeurl
+	[
+		url :creatorBaseUrl + "report/All_Item_Tonality_Details?criteria=" + encodeUrl(itemPhysicalTonalityCriteria) + "&field_config=all"
+		type :GET
+		connection:"zcreator"
+	];
+	logs.put("ITem Physical Tonality Details",itemPhysicalTonalityDetails);
