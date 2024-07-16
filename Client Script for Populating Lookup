@@ -1,0 +1,15 @@
+let dealDetails = ZDK.Page.getField("Opportunity").getValue();
+if (dealDetails) {
+
+    dealDetails = ZDK.Apps.CRM.Deals.fetchById(dealDetails.id);
+    console.log(dealDetails);
+
+    const clientID = dealDetails._Account_Name_Lookup_Id;
+    console.log(clientID);
+
+    if (clientID) {
+        const clientDetails = ZDK.Apps.CRM.Accounts.fetchById(clientID);
+        console.log(clientDetails);
+        ZDK.Page.getField("Client").setValue({ "name": clientDetails._Account_Name, "id": clientID });
+    }
+}
