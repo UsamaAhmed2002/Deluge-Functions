@@ -1,0 +1,29 @@
+//In this Client Script we have to Validate that the user only enters Arabic Text in the Client Arabic Name Field. Wwe are using zoho.ai.predictLanguage Integration Task here to predict that whether  the text is in Arabic Language or not. As the Task cannot be directly called in the Client Script so we are using Custom function to call the Task and then calling Custom Function iteself in the Client Script.
+const text = ZDK.Page.getField("Company_Arabic").getValue();
+let isArabicText = false;
+console.log(text);
+if (text) {
+    try {
+         const predictLanguage = ZDK.HTTP.request({
+        "url": [url of your cf]&text="+text,
+        "method": "POST",
+        "parameters": {text}
+         });
+        const res = JSON.parse(predictLanguage.getResponse());
+        console.log(res);
+        if (res.code==="success") {
+            const resDetails = res.details;
+            if (resDetails.output==="true") {
+                isArabicText = true;
+            }
+        }
+    } catch (e) {
+        console.log(e);
+    }
+   
+}
+console.log(isArabicText);
+if (!isArabicText) {
+    ZDK.Client.showAlert("Please Enter Arabic Text only in this Field");
+    ZDK.Page.getField("Company_Arabic").setValue(null);
+}
