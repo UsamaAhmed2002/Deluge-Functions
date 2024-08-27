@@ -1,0 +1,22 @@
+invv = respInv.get("invoice");
+			invid = invv.getJSON("invoice_id");
+			markasSent = invokeurl
+			[
+				url :"https://books.zoho.com/api/v3/invoices/" + invid + "/status/sent?organization_id=" + orgID
+				type :POST
+				connection:"zoho_flow_new"
+			];
+			logs.put("Invoice Mark as sent",markasSent);
+			resp_inv = respInv.getJSON("invoice");
+			if(respInv.getJSON("message") == "The invoice has been created." || respInv.getJSON("message") == "تم إنشاء الفاتورة." || respInv.getJSON("message") == "success")
+			{
+				li = List();
+				li.add(resp_inv.getJSON("invoice_id"));
+				var22 = invokeurl
+				[
+					url :"https://books.zoho.com/api/v3/invoices/mapwithorder?organization_id=763011853&invoice_ids=" + li
+					type :POST
+					connection:"zoho_flow_new"
+				];
+				logs.put("Invoice mapped with order",var22);
+			}
