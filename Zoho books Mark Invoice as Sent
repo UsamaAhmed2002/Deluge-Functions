@@ -1,0 +1,7 @@
+markasSent = invokeurl
+			[
+				url :"https://books.zoho.com/api/v3/invoices/" + invid + "/status/sent?organization_id=" + orgID
+				type :POST
+				connection:"zoho_flow_new"
+			];
+			logs.put("Invoice Mark as sent",markasSent)
