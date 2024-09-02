@@ -1,0 +1,55 @@
+void Workdrive.create_workdrive_folder(int id)
+{
+	//We are going to create Workdrive Folder with Folder name as Below Format
+	//foldername = "project"  + project_open_solar_id
+	workdrive_base_url = "https://www.zohoapis.com/workdrive/api/v1/";
+	//Fetch Project Details
+	projectDetails = New_Project[ID == input.id];
+	//We got this id from Workdrrive Team Folder URL
+	Project_Folder_Parent_ID = "nsxe4e56f02b7d90d4799a4514ecd1f620393";
+	if(projectDetails.count() > 0)
+	{
+		info "Project Found ";
+		//Check if Project Folder already Created
+		if(projectDetails.Project_Folder_ID.isEmpty())
+		{
+			info "Project Folder id is empty";
+			//create Folder Name
+			folderName = "Project-" + projectDetails.OpenSolar_Project_ID.toString();
+			header = Map();
+			header.put("Accept","application/vnd.api+json");
+			data = Map();
+			data_param1 = Map();
+			att_param1 = Map();
+			att_param1.put("name",folderName);
+			att_param1.put("parent_id",Project_Folder_Parent_ID);
+			data_param1.put("attributes",att_param1);
+			data_param1.put("type","files");
+			data.put("data",data_param1);
+			//Create Folder 
+			createdFolder = invokeurl
+			[
+				url :workdrive_base_url + "files"
+				type :POST
+				parameters:data.toString()
+				headers:header
+				connection:"zoho_workdrive"
+			];
+			info "Created Folder == " + createdFolder;
+			//Store Folder Attributes
+			if(createdFolder.getJSON("data") != null)
+			{
+				folderData = createdFolder.getJSON("data");
+				folderID = folderData.getJSON("id");
+				folderAttributes = folderData.getJSON("attributes");
+				folderDownloadUrl = folderAttributes.getJSON("download_url");
+				info "Folder download URL == " + folderDownloadUrl;
+				folderPermaLink = folderAttributes.getJSON("permalink");
+				info "Folder Perma Link ==  " + folderPermaLink;
+				folderLink = "<a href='" + folderPermaLink + "' target='_blank' title='Project Folder'>Open Project Folder</a>";
+				projectDetails.Project_Folder_Link=folderLink;
+				projectDetails.Project_Folder_ID=folderID;
+			}
+		}
+	}
+}
