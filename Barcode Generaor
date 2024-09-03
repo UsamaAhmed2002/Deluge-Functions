@@ -1,0 +1,1 @@
+barcode Generator Api = "https://barcode.te-it.com/barcode.ashx?data=629"+ input.ID + "&code=Code128&translate-esc=true"
