@@ -1,0 +1,385 @@
+///Get Proj INitiation DEtails 
+crmBaseUrl = "https://www.zohoapis.sa/crm/v7/";
+projIniDetails = zoho.crm.getRecordById("Project_Initiations",projID);
+info "Proj Initiation Details == " + projIniDetails;
+pi_Invoice_Payment_Slip = projIniDetails.getJSON("Invoice_Payment_Slip");
+/*********************************************************************/
+piInvoicePaymentSlipList = List();
+if(pi_Invoice_Payment_Slip != null)
+{
+	if(pi_Invoice_Payment_Slip.size() > 0)
+	{
+		for each  piInvoicePayment in pi_Invoice_Payment_Slip
+		{
+			piInvoicePaymentMap = Map();
+			piInvoicePaymentMap.put("id",piInvoicePayment.getJSON("attachment_Id"));
+			piInvoicePaymentMap.put("_delete",null);
+			piInvoicePaymentSlipList.add(piInvoicePaymentMap);
+		}
+	}
+}
+/*********************************************************************/
+pi_Customer_Technical_Proposal = projIniDetails.getJSON("Scope_Document");
+/*********************************************************************/
+pi_Customer_Technical_ProposalList = List();
+if(pi_Customer_Technical_Proposal != null)
+{
+	if(pi_Customer_Technical_Proposal.size() > 0)
+	{
+		for each  picustomerTechProposal in pi_Customer_Technical_Proposal
+		{
+			picustomerTechProposalMap = Map();
+			picustomerTechProposalMap.put("id",picustomerTechProposal.getJSON("attachment_Id"));
+			picustomerTechProposalMap.put("_delete",null);
+			pi_Customer_Technical_ProposalList.add(picustomerTechProposalMap);
+		}
+	}
+}
+/*********************************************************************/
+pi_Final_Vendor_Disti_Quote = projIniDetails.getJSON("Final_Vendor_Disti_Quote");
+/*********************************************************************/
+pi_Final_Vendor_Disti_QuoteList = List();
+if(pi_Final_Vendor_Disti_Quote != null)
+{
+	if(pi_Final_Vendor_Disti_Quote.size() > 0)
+	{
+		for each  pi_final_vendor_disti_quote in pi_Final_Vendor_Disti_Quote
+		{
+			pi_final_vendor_disti_quoteMap = Map();
+			pi_final_vendor_disti_quoteMap.put("id",pi_final_vendor_disti_quote.getJSON("attachment_Id"));
+			pi_final_vendor_disti_quoteMap.put("_delete",null);
+			pi_Final_Vendor_Disti_QuoteList.add(pi_final_vendor_disti_quoteMap);
+		}
+	}
+}
+/*********************************************************************/
+pi_pdf_Financial_Proposal = projIniDetails.getJSON("pdf_Financial_Proposal");
+/*********************************************************************/
+pi_pdf_Financial_ProposalList = List();
+if(pi_pdf_Financial_Proposal != null)
+{
+	if(pi_pdf_Financial_Proposal.size() > 0)
+	{
+		for each  pi_pdf_FinancialProp in pi_pdf_Financial_Proposal
+		{
+			pi_pdf_FinancialPropMap = Map();
+			pi_pdf_FinancialPropMap.put("id",pi_pdf_FinancialProp.getJSON("attachment_Id"));
+			pi_pdf_FinancialPropMap.put("_delete",null);
+			pi_pdf_Financial_ProposalList.add(pi_pdf_FinancialPropMap);
+		}
+	}
+}
+/*********************************************************************/
+pi_Signed_Agreement = projIniDetails.getJSON("Signed_Agreement");
+/*********************************************************************/
+pi_Signed_AgreementList = List();
+if(pi_Signed_Agreement != null)
+{
+	if(pi_Signed_Agreement.size() > 0)
+	{
+		for each  pisignedAgg in pi_Signed_Agreement
+		{
+			pisignedAggMap = Map();
+			pisignedAggMap.put("id",pisignedAgg.getJSON("attachment_Id"));
+			pisignedAggMap.put("_delete",null);
+			pi_Signed_AgreementList.add(pisignedAggMap);
+		}
+	}
+}
+/*********************************************************************/
+pi_Contract_If_needed = projIniDetails.getJSON("Contract_If_needed");
+/*********************************************************************/
+pi_Contract_If_neededList = List();
+if(pi_Contract_If_needed != null)
+{
+	if(pi_Contract_If_needed.size() > 0)
+	{
+		for each  contractifneeded in pi_Contract_If_needed
+		{
+			pi_contractifneededMap = Map();
+			pi_contractifneededMap.put("id",contractifneeded.getJSON("attachment_Id"));
+			pi_contractifneededMap.put("_delete",null);
+			pi_Contract_If_neededList.add(pi_contractifneededMap);
+		}
+	}
+}
+/*********************************************************************/
+Other_Documents = projIniDetails.getJSON("Other_Documents");
+/*********************************************************************/
+Other_DocumentsList = List();
+if(Other_Documents != null)
+{
+	if(Other_Documents.size() > 0)
+	{
+		for each  Other_DocumentsRec in Other_Documents
+		{
+			Other_DocumentsRecMap = Map();
+			Other_DocumentsRecMap.put("id",Other_DocumentsRec.getJSON("attachment_Id"));
+			Other_DocumentsRecMap.put("_delete",null);
+			Other_DocumentsList.add(Other_DocumentsRecMap);
+		}
+	}
+}
+updatePIMap = Map();
+updatePIMap.put("Invoice_Payment_Slip",piInvoicePaymentSlipList);
+updatePIMap.put("Scope_Document",pi_Customer_Technical_ProposalList);
+updatePIMap.put("Final_Vendor_Disti_Quote",pi_Final_Vendor_Disti_QuoteList);
+updatePIMap.put("Other_Documents",Other_DocumentsList);
+updatePIMap.put("Signed_Agreement",pi_Signed_AgreementList);
+updatePIMap.put("Contract_If_needed",pi_Contract_If_neededList);
+dataUpdateMap = Map();
+dataUpdateMap.put("data",{updatePIMap});
+info dataUpdateMap;
+deletedFiles = invokeurl
+[
+	url :crmBaseUrl + "Project_Initiations/" + projID
+	type :PUT
+	parameters:dataUpdateMap.toString()
+	connection:"crm"
+];
+info deletedFiles;
+/*********************************************************************/
+oppDetails = zoho.crm.getRecordById("Deals",projIniDetails.getJSON("Opportunity").getJSON("id"));
+info "Opp Details == " + oppDetails;
+if(oppDetails != null)
+{
+	updateMap = Map();
+	RfP = oppDetails.getJSON("Request_for_Proposal");
+	clientTechnicalProposal = oppDetails.getJSON("Customer_Technical_Proposal");
+	Vendor_DistiQuote = oppDetails.getJSON("Final_Vendor_Disti_Quote");
+	pdf_Financial_Proposal = oppDetails.getJSON("pdf_Financial_Proposal");
+	Excel_Costing_Sheet = oppDetails.getJSON("Excel_Costing_Sheet");
+	Client_Purchase_Order = oppDetails.getJSON("Client_Purchase_Order");
+	Contract_if_needed = oppDetails.getJSON("Contract_if_needed");
+	/****************************************Code for Uploading RFP Files***********************************/
+	if(RfP != null)
+	{
+		if(RfP.size() > 0)
+		{
+			rfpattachment_IdS_List = List();
+			for each  r_f_p in RfP
+			{
+				info r_f_p;
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + r_f_p.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				rfpFileMap = Map();
+				rfpFileMap.put("File_Id__s",fileID);
+				rfpattachment_IdS_List.add(rfpFileMap);
+			}
+			info "RFP File IDS List == " + rfpattachment_IdS_List;
+			if(rfpattachment_IdS_List.size() > 0)
+			{
+				updateMap.put("Other_Documents",rfpattachment_IdS_List);
+			}
+		}
+	}
+	/****************************************Code for Uploading Technical Propsal Files***********************************/
+	if(clientTechnicalProposal != null)
+	{
+		if(clientTechnicalProposal.size() > 0)
+		{
+			clientTechnicalProposal_IDS_List = List();
+			for each  clientTechProp in clientTechnicalProposal
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + clientTechProp.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				clientTechPropFileMap = Map();
+				clientTechPropFileMap.put("File_Id__s",fileID);
+				clientTechnicalProposal_IDS_List.add(clientTechPropFileMap);
+			}
+			info "Client tech Prop File IDS List == " + clientTechnicalProposal_IDS_List;
+			if(clientTechnicalProposal_IDS_List.size() > 0)
+			{
+				updateMap.put("Scope_Document",clientTechnicalProposal_IDS_List);
+			}
+		}
+	}
+	// 	/****************************************Code for Uploading Vendor_DistiQuote Files***********************************/
+	if(Vendor_DistiQuote != null)
+	{
+		if(Vendor_DistiQuote.size() > 0)
+		{
+			Vendor_DistiQuote_IDS_List = List();
+			for each  Vendor_Disti in Vendor_DistiQuote
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Vendor_Disti.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				Vendor_DistiFileMap = Map();
+				Vendor_DistiFileMap.put("File_Id__s",fileID);
+				Vendor_DistiQuote_IDS_List.add(Vendor_DistiFileMap);
+			}
+			info "Vendor District Quote File IDS List == " + Vendor_DistiQuote_IDS_List;
+			if(Vendor_DistiQuote_IDS_List.size() > 0)
+			{
+				updateMap.put("Final_Vendor_Disti_Quote",Vendor_DistiQuote_IDS_List);
+			}
+		}
+	}
+	// 	/****************************************Code for Uploading pdf_Financial_Proposal Files***********************************/
+	if(pdf_Financial_Proposal != null)
+	{
+		if(pdf_Financial_Proposal.size() > 0)
+		{
+			pdf_Financial_Proposal_IDS_List = List();
+			for each  pd_final_prop in pdf_Financial_Proposal
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + pd_final_prop.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				pd_final_propFileMap = Map();
+				pd_final_propFileMap.put("File_Id__s",fileID);
+				pdf_Financial_Proposal_IDS_List.add(pd_final_propFileMap);
+			}
+			info "pdf_financial _prop File IDS List == " + pdf_Financial_Proposal_IDS_List;
+			if(pdf_Financial_Proposal_IDS_List.size() > 0)
+			{
+				updateMap.put("Invoice_Payment_Slip",pdf_Financial_Proposal_IDS_List);
+			}
+		}
+	}
+	// 	/****************************************Code for Uploading Client_Purchase_Order Files***********************************/
+	if(Client_Purchase_Order != null)
+	{
+		if(Client_Purchase_Order.size() > 0)
+		{
+			Client_Purchase_Order_IDS_List = List();
+			for each  client_po in Client_Purchase_Order
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + client_po.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				client_poFileMap = Map();
+				client_poFileMap.put("File_Id__s",fileID);
+				Client_Purchase_Order_IDS_List.add(client_poFileMap);
+			}
+			info "client PO File IDS List == " + Client_Purchase_Order_IDS_List;
+			if(Client_Purchase_Order_IDS_List.size() > 0)
+			{
+				updateMap.put("Signed_Agreement",Client_Purchase_Order_IDS_List);
+			}
+		}
+	}
+	// 	/****************************************Code for Uploading Contract_if_needed Files***********************************/
+	if(Contract_if_needed != null)
+	{
+		if(Contract_if_needed.size() > 0)
+		{
+			Contract_if_needed_IDS_List = List();
+			for each  Contract_ifNeededRec in Contract_if_needed
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Contract_ifNeededRec.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				response = invokeurl
+				[
+					url :crmBaseUrl + "files"
+					type :POST
+					files:getFile
+					connection:"crm"
+				];
+				info "Uploaded File == " + response;
+				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				Contract_ifNeededRecFileMap = Map();
+				Contract_ifNeededRecFileMap.put("File_Id__s",fileID);
+				Contract_if_needed_IDS_List.add(Contract_ifNeededRecFileMap);
+			}
+			info "Contract if Needed IDS List == " + Contract_if_needed_IDS_List;
+			if(Contract_if_needed_IDS_List.size() > 0)
+			{
+				updateMap.put("Contract_If_needed",Contract_if_needed_IDS_List);
+			}
+		}
+	}
+	finalMap = Map();
+	finalMap.put("data",{updateMap});
+	info "Update Map == " + updateMap;
+	if(updateMap != null)
+	{
+		updatedProjectInitiationRec = invokeurl
+		[
+			url :crmBaseUrl + "Project_Initiations/" + projID
+			type :PUT
+			parameters:finalMap.toString()
+			connection:"crm"
+		];
+		info "Updated Proj Initiation == " + updatedProjectInitiationRec;
+	}
+}
