@@ -1,0 +1,43 @@
+// Initialize logs and variables
+logs = List();
+crmBaseUrl = "https://www.zohoapis.com/crm/v7/";
+pageToken = null;
+moreRecords=false;
+allAmcRecords=List();
+customList  =  ",".leftpad("50").toList(" ");
+ for each index i in customList{
+	// Build URL with or without page token
+    url = crmBaseUrl + "AMC_Management?fields=Name,AMC_End_Date1&per_page=2000";
+    if (pageToken != null) {
+        url += "&page_token=" + pageToken;
+    }
+
+    // Make the API call
+    response = invokeUrl[
+        url: url
+        type: GET
+        connection: "crm"
+    ];
+
+    // Add the records to the list
+    allAmcRecords.addAll(response.get("data"));
+	
+	if(response.getJSON("more_records")==true){
+		// Check for the next page token
+		pageToken = response.getJSON("next_page_token");
+		// Log all AMC records
+	}else{
+		break;
+	}
+    
+ }
+ 
+ for each rec in allAmcRecords{
+	 if(rec.getJSON("AMC_End_Date1")!=null){
+		 dueDate = zoho.currentdate.days360(rec.getJSON("AMC_End_Date1"));
+		 info dueDate;
+		 zoho.crm.updateRecord("AMC_Management",rec.getJSON("id"),{"Due_Days":dueDate});
+	 }
+ }
+logs.add({"AMC records": allAmcRecords}); 
+info logs;
