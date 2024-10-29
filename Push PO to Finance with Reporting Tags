@@ -1,0 +1,169 @@
+void Inventory.postPOFromCustombutton(int id)
+{
+	input1 = Purchase_Order[ID == id];
+	// 		rec = invokeurl
+	// 			[
+	// 				url :"https://books.zoho.sa/api/v3/purchaseorders/3209000000523016?organization_id=150000093433"
+	// 				type :GET
+	// 				connection:"books"
+	// 			];
+	// 			info rec;
+	vendor_cr_id = input1.Vendor;
+	vendor = Vendors[ID == vendor_cr_id];
+	project = Project_Master[ID == input1.Project_Name];
+	project_reporting_tag_id = project.Project_tag_id;
+	mappy = Map();
+	col = List();
+	mappy.put("purchaseorder_number",input1.PO_No);
+	mappy.put("date",input1.PO_Date);
+	mappy.put("delivery_date",input1.Expected_delivery_date);
+	mappy.put("vendor_id",input1.Vendor.BooksID);
+	mappy.put("is_inclusive_tax",false);
+	mappy.put("order_status","issued");
+	custfL = List();
+	custf = Map();
+	custf.put("label","Project Name");
+	custf.put("value",project.Project_Name);
+	custfL.add(custf);
+	creator_id_cf_map = Map();
+	creator_id_cf_map.put("api_name","cf_creator_id");
+	creator_id_cf_map.put("value",input1.ID.toString());
+	custfL.add(creator_id_cf_map);
+	mappy.put("custom_fields",custfL);
+	mp1 = Map();
+	mp1.put("is_warehouse",false);
+	mp1.put("email","arabiansoftimplementation@gmail.com");
+	mappy.put("delivery_address",mp1);
+	mappy.put("status","issued");
+	mappy.put("current_sub_status","issued");
+	disflag = 0;
+	x = 0;
+	for each  rec in input1.Item_Details
+	{
+		line = Map();
+		x = x + 1;
+		line.put("item_id",rec.Services.BooksID);
+		line.put("name",rec.Services.Service);
+		line.put("description",rec.Part_No1.Product_Name + "\n" + rec.Part_No1.SM_Service_Code + "\n" + rec.Description);
+		line.put("item_order",x);
+		line.put("project_id",project.BooksID);
+		itemCfList = List();
+		itemCfMap = Map();
+		itemCfMap.put("customfield_id","3209000000407097");
+		itemCfMap.put("value",rec.Associated_Task.Task_Record_ID_zprojects);
+		itemCfList.add(itemCfMap);
+		item_project_id = Map();
+		item_project_id.put("customfield_id","3209000000422065");
+		item_project_id.put("value",project.ProjectsID);
+		item_task_proj_code_map = Map();
+		item_task_proj_code_map.put("customfield_id","3209000000527013");
+		item_task_proj_code_map.put("value",rec.Associated_Task.Task_Code);
+		item_proj_no_map = Map();
+		item_proj_no_map.put("customfield_id","3209000000527039");
+		item_proj_no_map.put("value",project.Project_Code);
+		item_sku_map = Map();
+		item_sku_map.put("customfield_id","3209000000527065");
+		item_sku_map.put("value",rec.Part_No1.SM_Service_Code);
+		tags_list = List();
+		tag_details = thisapp.integrations.get_reporting_tag_details("Business Line");
+		if(tag_details != null)
+		{
+			for each  tag_option_details in tag_details.getJSON("tag_options")
+			{
+				if(tag_option_details.getJSON("tag_option_name") == rec.Business_Line.Business_Line)
+				{
+					tag_option_id = tag_option_details.getJSON("tag_option_id");
+					business_line_tag_map = Map();
+					business_line_tag_map.put("tag_id",tag_details.getJSON("tag_id"));
+					business_line_tag_map.put("tag_option_id",tag_option_id);
+					tags_list.add(business_line_tag_map);
+				}
+			}
+		}
+		// --------- Business Line Reporting Tag Mapping 
+		service_category_tags = thisapp.integrations.get_reporting_tag_details("Service Category");
+		if(service_category_tags != null)
+		{
+			for each  tag_option_details in service_category_tags.getJSON("tag_options")
+			{
+				if(tag_option_details.getJSON("tag_option_name") == rec.Service_Category.Service_Category)
+				{
+					tag_option_id = tag_option_details.getJSON("tag_option_id");
+					service_category_tag_map = Map();
+					service_category_tag_map.put("tag_id",service_category_tags.getJSON("tag_id"));
+					service_category_tag_map.put("tag_option_id",tag_option_id);
+					tags_list.add(service_category_tag_map);
+				}
+			}
+		}
+		// 		item_business_line_map = Map();
+		// 		item_business_line_map.put("customfield_id","3209000000529045");
+		// 		item_business_line_map.put("value",rec.Business_Line.Business_Line);
+		// 		itemCfList.add(item_business_line_map);
+		// 		item_service_category_map = Map();
+		// 		item_service_category_map.put("customfield_id","3209000000529209");
+		// 		item_service_category_map.put("value",rec.Service_Category.Service_Category);
+		// 		itemCfList.add(item_service_category_map);
+		itemCfList.add(item_sku_map);
+		itemCfList.add(item_proj_no_map);
+		itemCfList.add(item_task_proj_code_map);
+		itemCfList.add(item_project_id);
+		line.put("item_custom_fields",itemCfList);
+		line.put("tags",tags_list);
+		line.put("rate",rec.Price);
+		if(rec.Discount > 0)
+		{
+			dis = rec.Discount.toString() + "%";
+			disflag = 1;
+			line.put("discount",dis);
+		}
+		line.put("quantity",rec.Qty);
+		line.put("unit",rec.Unit);
+		line.put("item_total",rec.Line_Total_D);
+		if(vendor.Tax_Treatment == "vat_registered")
+		{
+			line.put("tax_id","3209000000005275");
+		}
+		col.add(line);
+	}
+	if(disflag == 1)
+	{
+		mappy.put("discount_account_id","3209000000000461");
+		mappy.put("discount_type","item_level");
+	}
+	mappy.put("line_items",col);
+	//	info mappy;
+	resp = zoho.books.createRecord("PurchaseOrders","150000093433",mappy,"books");
+	//info resp;
+	info resp.getJSON("message");
+	if(resp.getJSON("message") == "Purchase Order has been added.")
+	{
+		inv_id = resp.get("purchaseorder").getJSON("purchaseorder_id");
+		inv_no = resp.get("purchaseorder").getJSON("purchaseorder_number");
+		input1.Zoho_books_PO_id=inv_id;
+		input1.PO_Status="Issued";
+		input1.Zoho_books_PO_No=inv_no;
+		pqs = Purchase_Quotation[ID == input1.PQ_No];
+		if(pqs.count() > 0)
+		{
+			for each  er in pqs.BOM_Details
+			{
+				er.PQ_Material_Status="PO Created";
+			}
+			pqs.PQ_Status="PO Created";
+		}
+		//info inv_id;
+		org = "150000093433";
+		mark_as_issued = invokeurl
+		[
+			url :"https://books.zoho.sa/api/v3/purchaseorders/" + inv_id.toNumber() + "/status/issued?organization_id=" + org
+			type :POST
+			connection:"books"
+		];
+		info mark_as_issued;
+	}
+	else
+	{
+		input1.Reason_If_not_posted_inventory=resp.getJSON("message");
+	}
+}
