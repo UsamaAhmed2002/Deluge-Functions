@@ -1,0 +1,32 @@
+map integrations.get_reporting_tag_details(string tag_name)
+{
+	try 
+	{
+		all_tags = invokeurl
+		[
+			url :"https://books.zoho.sa/api/v3/settings/tags?organization_id=150000093433"
+			type :GET
+			connection:"books"
+		];
+		info all_tags;
+		for each  tag in all_tags.getJSON("reporting_tags")
+		{
+			if(tag.getJSON("tag_name") == tag_name)
+			{
+				tag_details = invokeurl
+				[
+					url :"https://books.zoho.sa/api/v3/settings/tags/" + tag.getJSON("tag_id") + "?organization_id=150000093433"
+					type :GET
+					connection:"books"
+				];
+				info tag_details;
+				return tag_details.getJSON("reporting_tag");
+			}
+		}
+	}
+	catch (e)
+	{
+		info "Error while fetching tags";
+	}
+	return Map();
+}
