@@ -1,0 +1,154 @@
+void automation.Sync_SO_with_Books(Int id)
+{
+crmBaseUrl = "https://www.zohoapis.com/crm/v7/";
+booksBaseUrl = "https://www.zohoapis.com/books/v3/";
+booksOrgID = "752898018";
+logs = List();
+soDetails = invokeurl
+[
+	url :crmBaseUrl + "Sales_Orders/" + id
+	type :GET
+	connection:"crm"
+];
+info soDetails;
+soDetails = soDetails.getJSON("data").get(0);
+logs.add({"SO details":soDetails});
+owneremail = soDetails.getJSON("Owner").getJSON("email");
+currencies = invokeurl
+[
+	url :booksBaseUrl + "settings/currencies?organization_id=" + booksOrgID
+	type :GET
+	connection:"zohobooks"
+];
+logs.add({"Currencies":currencies});
+for each  currency in currencies.getJSON("currencies")
+{
+	if(currency.getJSON("currency_code") == soDetails.getJSON("$currency_symbol"))
+	{
+		currency_id = currency.getJSON("currency_id");
+	}
+}
+if(soDetails.getJSON("Account_Name") != null)
+{
+	account_details = zoho.crm.getRecordById("Accounts",soDetails.getJSON("Account_Name").getJSON("id").toLong());
+	logs.add({"Account Details ":account_details});
+	customer_details_from_books = zoho.books.getRecords("contacts",booksOrgID,{"zcrm_account_id":account_details.getJSON("id")},"zohobooks");
+	logs.add({"customer from boooks  == ":customer_details_from_books});
+	books_customer_details = customer_details_from_books.getJSON("contacts");
+	if(books_customer_details.size() > 0)
+	{
+		customer_books_id = books_customer_details.get(0).getJSON("contact_id");
+	}
+}
+else
+{
+	customer_books_id = "";
+}
+logs.add({"Customer Books ID":customer_books_id});
+SOMp = Map();
+SOMp.put("customer_id",customer_books_id);
+SOMp.put("currency_id",currency_id);
+SOMp.put("reference_number",soDetails.getJSON("SO_Number"));
+SOMp.put("date",zoho.currentdate);
+SOMp.put("terms",soDetails.getJSON("Terms_Conditions"));
+SOMp.put("salesorder_number",soDetails.getJSON("SO_Number"));
+SOMp.put("notes",soDetails.getJSON("Notes"));
+lineitems2 = List();
+for each  ele in soDetails.getJSON("Ordered_Items")
+{
+	linemp = Map();
+	prodid = ele.getJSON("Product_Name").getJSON("id");
+	prodsku = ele.getJSON("Product_Name").getJSON("Product_Code");
+	logs.add({"ProductID":prodid});
+	item = zoho.books.getRecords("items",booksOrgID,{"sku":prodsku},"zohobooks");
+	logs.add({"Product Details from books":item});
+	item_details_from_books = item.getJSON("items");
+	if(item_details_from_books.size() > 0)
+	{
+		item_details_from_books = item_details_from_books.get(0);
+		books_item_id = item_details_from_books.getJSON("item_id");
+	}
+	linemp.put("item_id",books_item_id);
+	// 	if(ele.getJSON("RFP") != null)
+	// 	{
+	// 		linemp.put("header_name",ele.getJSON("RFP").getJSON("name"));
+	// 	}
+	linemp.put("name",ele.getJSON("Product_Name").getJSON("name"));
+	linemp.put("quantity",ele.getJSON("Quantity"));
+	linemp.put("rate",ele.getJSON("List_Price"));
+	linemp.put("discount",ele.getJSON("Discount"));
+	linemp.put("description",ele.getJSON("Description"));
+	if(ele.getJSON("line_tax").size() > 0)
+	{
+		for each  taxRec in ele.getJSON("line_tax")
+		{
+			if(taxRec.getJSON("name").containsIgnoreCase("Sales Tax"))
+			{
+				taxID = "2730822000000187007";
+			}
+			else if(taxRec.getJSON("name").containsIgnoreCase("VAT"))
+			{
+				taxID = "2730822000001906764";
+			}
+			else
+			{
+				taxID = "2730822000000074239";
+			}
+		}
+	}
+	else
+	{
+		taxID = "2730822000000074239";
+	}
+	linemp.put("tax_id",taxID);
+	linemp.put("item_total",ele.getJSON("Net_Total"));
+	lineitems2.add(linemp);
+}
+SOMp.put("line_items",lineitems2);
+SOMp.put("tax_id",taxID);
+SOMp.put("sub_total",soDetails.getJSON("Sub_Total"));
+SOMp.put("total",soDetails.getJSON("Grand_Total"));
+logs.add({"So Params":SOMp});
+// soBooksID = 2730822000010734023;
+// // //===============================================
+// soBooksID = soDetails.getJSON("BooksID");
+// if(soBooksID == null)
+// {
+logs.add({"Creating SO":true});
+SOResp = zoho.books.createRecord("salesorders",booksOrgID,SOMp,"zohobooks");
+logs.add({"Created SO":SOResp});
+if(SOResp.getJSON("message") == "Sales Order has been created.")
+{
+	logs.add({"Created SO Successfully":true});
+	soBooksID = SOResp.getJSON("salesorder").getJSON("salesorder_id");
+	logs.add({"Updated in Crm":zoho.crm.updateRecord("Sales_Orders",id,{"BooksID":soBooksID})});
+	if(soDetails.getJSON("Upload_Attachment") != null)
+	{
+		fileID = soDetails.getJSON("Upload_Attachment").get(0).getJSON("File_Id__s");
+		downloadUrl = "https://www.zohoapis.com/crm/v2/files?id=" + fileID;
+		downloadedFile = invokeurl
+		[
+			url :downloadUrl
+			type :GET
+			connection:"crm"
+		];
+		info "Downloaded File == " + downloadedFile;
+		info "Downloaded File == " + downloadedFile.isFile();
+		if(downloadedFile.isFile())
+		{
+			downloadedFile.setParamName("attachment");
+			url = "https://books.zoho.com/api/v3/salesorders/" + soBooksID + "/attachment?organization_id=" + booksOrgID;
+			result = invokeurl
+			[
+				url :url
+				type :POST
+				files:downloadedFile
+				connection:"zohobooks"
+			];
+			info result;
+		}
+	}
+}
+// }
+info logs;
+}
