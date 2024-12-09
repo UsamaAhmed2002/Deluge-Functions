@@ -1,0 +1,90 @@
+
+BookID = vendor.getJSON("contact_id");
+mm = Map();
+getThisVendortDetails = invokeurl
+[
+	url :"https://www.zohoapis.com/books/v3/contacts/" + BookID + "?organization_id=803051619"
+	type :GET
+	parameters:mm
+	connection:"booksconnection"
+];
+//info getThisVendortDetails;
+mapToCreator = Map();
+if(getThisVendortDetails.getJSON("message") == "success")
+{
+	customerDetails = getThisVendortDetails.getJSON("contact");
+	contactType = customerDetails.getJSON("contact_type");
+	if(contactType == "vendor")
+	{
+		companyName = customerDetails.getJSON("company_name");
+		mapToCreator.put("Company_Name",companyName);
+		VendorDisplayName = customerDetails.getJSON("contact_name");
+		mapToCreator.put("Vendor_Display_Name",VendorDisplayName);
+		contactPerson = customerDetails.getJSON("contact_persons");
+		if(contactPerson.size() > 0)
+		{
+			primarycontact = ifnull(contactPerson.getJSON("salutation"),"") + " " + ifnull(contactPerson.getJSON("first_name"),"") + " " + ifnull(contactPerson.getJSON("last_name"),"");
+			mail = contactPerson.getJSON("email");
+		}
+		else
+		{
+			primarycontact = "";
+			mail = "";
+		}
+		mapToCreator.put("Primary_Contact",primarycontact);
+		mapToCreator.put("Vendor_Email",mail);
+		//primarycontact = contactPerson.getJSON("salutation") + " " + contactPerson.getJSON("first_name") + " " + contactPerson.getJSON("last_name");
+		//mapToCreator.put("Primary_Contact",primarycontact);
+		primaryContactPhNo = customerDetails.getJSON("phone");
+		mapToCreator.put("Vendor_Phone",primaryContactPhNo);
+		webSite = customerDetails.getJSON("website");
+		if(webSite != null)
+		{
+			url_map = Map();
+			url_map.put("url",webSite);
+			url_map.put("value","Open Vendor Website");
+			mapToCreator.put("Website",url_map);
+		}
+		taxTretment = customerDetails.getJSON("tax_treatment");
+		if(taxTretment == "vat_registered")
+		{
+			mapToCreator.put("Tax_Treatment","VAT Registered");
+		}
+		else
+		{
+			mapToCreator.put("Tax_Treatment","non_vat_registered");
+		}
+		sourceSupply = customerDetails.getJSON("country_code");
+		mapToCreator.put("Source_Of_Supply",sourceSupply);
+		custCurrncySummery = customerDetails.getJSON("vendor_currency_summaries");
+		currncy = custCurrncySummery.getJSON("currency_name_formatted");
+		mapToCreator.put("Currency",currncy);
+		paymentTerm = customerDetails.getJSON("payment_terms_label");
+		mapToCreator.put("Payment_Terms",paymentTerm);
+		billingAddressAttention = customerDetails.getJSON("billing_address").getJSON("attention");
+		mapToCreator.put("Attention",billingAddressAttention);
+		billingAddress = customerDetails.getJSON("billing_address").getJSON("address");
+		mapToCreator.put("Address",billingAddress);
+		mapToCreator.put("Zoho_Books_Id",BookID);
+		info mapToCreator;
+		optMap = Map();
+		alreadyExistOrNot = invokeurl
+		[
+			url :"https://creatorapp.zoho.com/api/v2/alasriyyah.alsafwa/fixed-assets-gulf-neo-care/report/All_Vendor_Report?Zoho_Books_Id=" + BookID
+			type :get
+			connection:"zcreator"
+		];
+		if(alreadyExistOrNot.get("code") == 3000)
+		{
+			crerRecorData = alreadyExistOrNot.getJSON("data");
+			crerRecorID = crerRecorData.getJSON("ID");
+			updateItemInfo = zoho.creator.updateRecord("alasriyyah.alsafwa","fixed-assets-gulf-neo-care","All_Vendor_Report",crerRecorID,mapToCreator,optMap,"zcreator");
+			info updateItemInfo;
+		}
+		else
+		{
+			pushInfo = zoho.creator.createRecord("alasriyyah.alsafwa","fixed-assets-gulf-neo-care","Add_Vendor",mapToCreator,optMap,"zcreator");
+			info pushInfo;
+		}
+	}
+}
