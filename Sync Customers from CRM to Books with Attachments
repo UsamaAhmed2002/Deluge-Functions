@@ -1,0 +1,242 @@
+booksBaseUrl = "https://www.zohoapis.sa/books/v3/";
+booksOrgID = "150000093433";
+//===============================Fetch the Account From CRM
+accountDetails = zoho.crm.getRecordById("Accounts",id);
+logs.put("Account Details",accountDetails);
+//============================================Fetching Currencies List to map with Customer
+currencies = invokeurl
+[
+	url :booksBaseUrl + "settings/currencies?organization_id=" + booksOrgID
+	type :GET
+	connection:"books"
+];
+logs.put("Currencies",currencies);
+//=================================================================Construct Data Map for Books
+booksDataMap = Map();
+booksDataMap.put("contact_name",accountDetails.getJSON("Account_Name"));
+booksDataMap.put("company_name",accountDetails.getJSON("Account_Name"));
+booksDataMap.put("contact_name_sec_lang",accountDetails.getJSON("Client_Name_Arabic"));
+//==========================Mapping of Currency
+if(currencies.getJSON("message") == "success" && accountDetails.getJSON("Currency1") != null)
+{
+	for each  currency in currencies.getJSON("currencies")
+	{
+		if(currency.getJSON("currency_code") == accountDetails.getJSON("Currency1"))
+		{
+			booksDataMap.put("currency_id",currency.getJSON("currency_id"));
+		}
+	}
+}
+//==============================Manipulating Tax Treatment
+accounttaxTreatment = accountDetails.getJSON("Tax_Treatment");
+if(accounttaxTreatment != null)
+{
+	taxTreatment = accounttaxTreatment.toLowerCase().replaceAll(" ","_");
+	if(taxTreatment == "vat_registered")
+	{
+		booksDataMap.put("is_taxable",true);
+	}
+	booksDataMap.put("tax_treatment",taxTreatment);
+	logs.put("Tax Treatment From CRM",taxTreatment);
+}
+if(accountDetails.getJSON("Tax_No") != null && (accounttaxTreatment == "VAT Registered" || accounttaxTreatment == "GCC VAT Registered"))
+{
+	booksDataMap.put("tax_reg_no",accountDetails.getJSON("Tax_No"));
+}
+booksDataMap.put("country_code","SA");
+//===============Now Mapping the Billing Address
+billingAddressMap = Map();
+billingAddressMap.put("street2",accountDetails.getJSON("Billing_Street"));
+billingAddressMap.put("city",accountDetails.getJSON("Billing_City"));
+billingAddressMap.put("state",accountDetails.getJSON("Billing_State"));
+billingAddressMap.put("country",accountDetails.getJSON("Billing_Country1"));
+billingAddressMap.put("attention",accountDetails.getJSON("Attention"));
+billingAddressMap.put("zip",accountDetails.getJSON("Billing_Code"));
+billingAddressMap.put("phone",accountDetails.getJSON("Phone"));
+billingAddressMap.put("additional_number",accountDetails.getJSON("Additional_Number"));
+billingAddressMap.put("address",accountDetails.getJSON("Building_No"));
+billingAddressMap.put("country_sec_lang",accountDetails.getJSON("Billing_Country_Arabic"));
+billingAddressMap.put("attention_sec_lang",accountDetails.getJSON("Billing_Street_Arabic"));
+billingAddressMap.put("address_sec_lang",accountDetails.getJSON("Building_No_Arabic"));
+billingAddressMap.put("street2_sec_lang",accountDetails.getJSON("Billing_Street_Arabic1"));
+billingAddressMap.put("additional_number_sec_lang",accountDetails.getJSON("Additional_Number_Arabic"));
+billingAddressMap.put("city_sec_lang",accountDetails.getJSON("Billing_City_Arabic"));
+billingAddressMap.put("state_sec_lang",accountDetails.getJSON("Billing_State_Arabic"));
+booksDataMap.put("billing_address",billingAddressMap);
+//=====================Now Mapping the Shipping Address
+shippingAddressMap = Map();
+shippingAddressMap.put("street2",accountDetails.getJSON("Shipping_Street"));
+shippingAddressMap.put("city",accountDetails.getJSON("Shipping_City"));
+shippingAddressMap.put("state",accountDetails.getJSON("Shipping_State"));
+shippingAddressMap.put("country",accountDetails.getJSON("Shipping_Country"));
+booksDataMap.put("shipping_address",shippingAddressMap);
+booksDataMap.put("notes",accountDetails.getJSON("Description"));
+cfList = List();
+crmIDCFMap = Map();
+crmIDCFMap.put("index",1);
+crmIDCFMap.put("value",id.toString());
+cfList.add(crmIDCFMap);
+if(accountDetails.getJSON("CR_No") != null)
+{
+	//=================================Cf for CR Number
+	cfCrNumber = Map();
+	cfCrNumber.put("index",2);
+	cfCrNumber.put("value",accountDetails.getJSON("CR_No"));
+	cfList.add(cfCrNumber);
+}
+//===================================================================================
+//Now lets download the Files From Attachment Fields first and then push them to books	
+if(accountDetails.getJSON("VAT_Copy") != null)
+{
+	fileID = accountDetails.getJSON("VAT_Copy").get(0).getJSON("file_Id");
+	downloadUrl = "https://www.zohoapis.sa/crm/v2/files?id=" + fileID;
+	downloadedFile = invokeurl
+	[
+		url :downloadUrl
+		type :GET
+		connection:"crm"
+	];
+	logs.put("Downloaded File",downloadedFile.isFile());
+	logs.put("Downloaded File",downloadedFile);
+	downloadedFile.setParamName("document");
+	cfID = "3209000000011441";
+	attachmentMap = Map();
+	result = invokeurl
+	[
+		url :booksBaseUrl + "customfields/" + cfID + "/adddocument?organization_id=" + booksOrgID
+		type :POST
+		files:downloadedFile
+		connection:"books"
+	];
+	info "result=" + result;
+	code = result.get("code");
+	if(code == 0)
+	{
+		result = result.get("documents");
+		docID = result.get("document_id");
+		attachmentMap.put("3209000000011441",docID);
+	}
+	docID = attachmentMap.get("3209000000011441");
+	if(!docID.isNull())
+	{
+		cMap = Map();
+		cMap.put("api_name","cf_vat_copy");
+		cMap.put("value",docID);
+		cfList.add(cMap);
+	}
+}
+//===================================================================================
+if(accountDetails.getJSON("CR_Copy") != null)
+{
+	fileID = accountDetails.getJSON("CR_Copy").get(0).getJSON("file_Id");
+	downloadUrl = "https://www.zohoapis.sa/crm/v2/files?id=" + fileID;
+	downloadedFile = invokeurl
+	[
+		url :downloadUrl
+		type :GET
+		connection:"crm"
+	];
+	logs.put("Downloaded File",downloadedFile.isFile());
+	logs.put("Downloaded File",downloadedFile);
+	downloadedFile.setParamName("document");
+	cfID = "3209000000011437";
+	attachmentMap = Map();
+	result = invokeurl
+	[
+		url :booksBaseUrl + "customfields/" + cfID + "/adddocument?organization_id=" + booksOrgID
+		type :POST
+		files:downloadedFile
+		connection:"books"
+	];
+	info "result=" + result;
+	code = result.get("code");
+	if(code == 0)
+	{
+		result = result.get("documents");
+		docID = result.get("document_id");
+		attachmentMap.put("3209000000011437",docID);
+	}
+	docID = attachmentMap.get("3209000000011437");
+	if(!docID.isNull())
+	{
+		cMap = Map();
+		cMap.put("api_name","cf_cr_copy");
+		cMap.put("value",docID);
+		cfList.add(cMap);
+	}
+}
+//===================================================================================
+if(accountDetails.getJSON("National_Address") != null)
+{
+	fileID = accountDetails.getJSON("National_Address").get(0).getJSON("file_Id");
+	downloadUrl = "https://www.zohoapis.sa/crm/v2/files?id=" + fileID;
+	downloadedFile = invokeurl
+	[
+		url :downloadUrl
+		type :GET
+		connection:"crm"
+	];
+	logs.put("Downloaded File",downloadedFile.isFile());
+	logs.put("Downloaded File",downloadedFile);
+	downloadedFile.setParamName("document");
+	cfID = "3209000000011445";
+	attachmentMap = Map();
+	result = invokeurl
+	[
+		url :booksBaseUrl + "customfields/" + cfID + "/adddocument?organization_id=" + booksOrgID
+		type :POST
+		files:downloadedFile
+		connection:"books"
+	];
+	info "result=" + result;
+	code = result.get("code");
+	if(code == 0)
+	{
+		result = result.get("documents");
+		docID = result.get("document_id");
+		attachmentMap.put("3209000000011445",docID);
+	}
+	docID = attachmentMap.get("3209000000011445");
+	if(!docID.isNull())
+	{
+		cMap = Map();
+		cMap.put("api_name","cf_national_address");
+		cMap.put("value",docID);
+		cfList.add(cMap);
+	}
+}
+//==================================================================================
+booksDataMap.put("custom_fields",cfList);
+info booksDataMap;
+// booksDataMap.put("place_of_supply","SA");
+//==================================================================================================================
+booksCustomerID = accountDetails.getJSON("BooksID");
+if(booksCustomerID == null)
+{
+	logs.put("Creating Customer",true);
+	createdCustomer = invokeurl
+	[
+		url :booksBaseUrl + "contacts?organization_id=" + booksOrgID
+		type :POST
+		parameters:booksDataMap.toString()
+		connection:"books"
+	];
+	logs.put("Created in Books",createdCustomer);
+	if(createdCustomer.getJSON("code") == 0)
+	{
+		booksCustomerID = createdCustomer.getJSON("contact").getJSON("contact_id");
+		logs.put("Updated ID in Crm",zoho.crm.updateRecord("Accounts",id,{"BooksID":booksCustomerID}));
+	}
+}
+else
+{
+	logs.put("Updating Customer",true);
+	updatedCustomer = invokeurl
+	[
+		url :booksBaseUrl + "contacts/" + booksCustomerID + "?organization_id=" + booksOrgID
+		type :PUT
+		parameters:booksDataMap.toString()
+		connection:"books"
+	];
+	logs.put("Updated Customer",updatedCustomer);
+}
