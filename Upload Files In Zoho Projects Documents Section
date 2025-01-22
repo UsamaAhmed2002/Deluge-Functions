@@ -1,0 +1,872 @@
+string standalone.sync_files_from_opp(Int projID,String zProjID)
+{
+///Get Proj INitiation DEtails 
+crmBaseUrl = "https://www.zohoapis.sa/crm/v7/";
+projectsBaseUrl = "https://projectsapi.zoho.sa";
+endPointV3 = "https://projects.zoho.sa/api/v3/portal/";
+projectPortalID = 150000093434;
+projIniDetails = zoho.crm.getRecordById("Project_Initiations",projID);
+info "Proj Initiation Details == " + projIniDetails;
+pi_Invoice_Payment_Slip = projIniDetails.getJSON("Invoice_Payment_Slip");
+//Getting Zoho Project Folder ID
+url1 = endPointV3 + projectPortalID + "/projects/" + zProjID + "/folders";
+teams = invokeurl
+[
+	url :url1
+	type :GET
+	connection:"projects"
+];
+info "Teams. == " + teams;
+if(teams.getJSON("default_folder") != null)
+{
+	folderId = teams.getJSON("default_folder").getJSON("workdrive_folder_id");
+}
+// for each  team in teams.get("folders")
+// {
+// 	if(team.containKey("thirdparty_folder_id"))
+// 	{
+// 		folderId = team.get("thirdparty_folder_id");
+// 	}
+// }
+info "Project Folder ID == " + folderId;
+/*********************************************************************/
+// piInvoicePaymentSlipList = List();
+// if(pi_Invoice_Payment_Slip != null)
+// {
+// 	if(pi_Invoice_Payment_Slip.size() > 0)
+// 	{
+// 		for each  piInvoicePayment in pi_Invoice_Payment_Slip
+// 		{
+// 			piInvoicePaymentMap = Map();
+// 			piInvoicePaymentMap.put("id",piInvoicePayment.getJSON("attachment_Id"));
+// 			piInvoicePaymentMap.put("_delete",null);
+// 			piInvoicePaymentSlipList.add(piInvoicePaymentMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// pi_Customer_Technical_Proposal = projIniDetails.getJSON("Scope_Document");
+// /*********************************************************************/
+// pi_Customer_Technical_ProposalList = List();
+// if(pi_Customer_Technical_Proposal != null)
+// {
+// 	if(pi_Customer_Technical_Proposal.size() > 0)
+// 	{
+// 		for each  picustomerTechProposal in pi_Customer_Technical_Proposal
+// 		{
+// 			picustomerTechProposalMap = Map();
+// 			picustomerTechProposalMap.put("id",picustomerTechProposal.getJSON("attachment_Id"));
+// 			picustomerTechProposalMap.put("_delete",null);
+// 			pi_Customer_Technical_ProposalList.add(picustomerTechProposalMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// /*********************************************************************/
+// pi_Excel_Costing_Sheet = projIniDetails.getJSON("Excel_Costing_Sheet");
+// /*********************************************************************/
+// pi_Excel_Costing_SheetList = List();
+// if(pi_Excel_Costing_Sheet != null)
+// {
+// 	if(pi_Excel_Costing_Sheet.size() > 0)
+// 	{
+// 		for each  piexcelCostingSheet in pi_Excel_Costing_Sheet
+// 		{
+// 			piexcelCostingSheetMap = Map();
+// 			piexcelCostingSheetMap.put("id",piexcelCostingSheet.getJSON("attachment_Id"));
+// 			piexcelCostingSheetMap.put("_delete",null);
+// 			pi_Excel_Costing_SheetList.add(piexcelCostingSheetMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// pi_Final_Vendor_Disti_Quote = projIniDetails.getJSON("Final_Vendor_Disti_Quote");
+// /*********************************************************************/
+// pi_Final_Vendor_Disti_QuoteList = List();
+// if(pi_Final_Vendor_Disti_Quote != null)
+// {
+// 	if(pi_Final_Vendor_Disti_Quote.size() > 0)
+// 	{
+// 		for each  pi_final_vendor_disti_quote in pi_Final_Vendor_Disti_Quote
+// 		{
+// 			pi_final_vendor_disti_quoteMap = Map();
+// 			pi_final_vendor_disti_quoteMap.put("id",pi_final_vendor_disti_quote.getJSON("attachment_Id"));
+// 			pi_final_vendor_disti_quoteMap.put("_delete",null);
+// 			pi_Final_Vendor_Disti_QuoteList.add(pi_final_vendor_disti_quoteMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// pi_pdf_Financial_Proposal = projIniDetails.getJSON("pdf_Financial_Proposal");
+// /*********************************************************************/
+// pi_pdf_Financial_ProposalList = List();
+// if(pi_pdf_Financial_Proposal != null)
+// {
+// 	if(pi_pdf_Financial_Proposal.size() > 0)
+// 	{
+// 		for each  pi_pdf_FinancialProp in pi_pdf_Financial_Proposal
+// 		{
+// 			pi_pdf_FinancialPropMap = Map();
+// 			pi_pdf_FinancialPropMap.put("id",pi_pdf_FinancialProp.getJSON("attachment_Id"));
+// 			pi_pdf_FinancialPropMap.put("_delete",null);
+// 			pi_pdf_Financial_ProposalList.add(pi_pdf_FinancialPropMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// pi_Signed_Agreement = projIniDetails.getJSON("Signed_Agreement");
+// /*********************************************************************/
+// pi_Signed_AgreementList = List();
+// if(pi_Signed_Agreement != null)
+// {
+// 	if(pi_Signed_Agreement.size() > 0)
+// 	{
+// 		for each  pisignedAgg in pi_Signed_Agreement
+// 		{
+// 			pisignedAggMap = Map();
+// 			pisignedAggMap.put("id",pisignedAgg.getJSON("attachment_Id"));
+// 			pisignedAggMap.put("_delete",null);
+// 			pi_Signed_AgreementList.add(pisignedAggMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// pi_Contract_If_needed = projIniDetails.getJSON("Contract_If_needed");
+// /*********************************************************************/
+// pi_Contract_If_neededList = List();
+// if(pi_Contract_If_needed != null)
+// {
+// 	if(pi_Contract_If_needed.size() > 0)
+// 	{
+// 		for each  contractifneeded in pi_Contract_If_needed
+// 		{
+// 			pi_contractifneededMap = Map();
+// 			pi_contractifneededMap.put("id",contractifneeded.getJSON("attachment_Id"));
+// 			pi_contractifneededMap.put("_delete",null);
+// 			pi_Contract_If_neededList.add(pi_contractifneededMap);
+// 		}
+// 	}
+// }
+// /*********************************************************************/
+// Other_Documents = projIniDetails.getJSON("Other_Documents");
+// /*********************************************************************/
+// Other_DocumentsList = List();
+// if(Other_Documents != null)
+// {
+// 	if(Other_Documents.size() > 0)
+// 	{
+// 		for each  Other_DocumentsRec in Other_Documents
+// 		{
+// 			Other_DocumentsRecMap = Map();
+// 			Other_DocumentsRecMap.put("id",Other_DocumentsRec.getJSON("attachment_Id"));
+// 			Other_DocumentsRecMap.put("_delete",null);
+// 			Other_DocumentsList.add(Other_DocumentsRecMap);
+// 		}
+// 	}
+// }
+// updatePIMap = Map();
+// updatePIMap.put("Invoice_Payment_Slip",piInvoicePaymentSlipList);
+// updatePIMap.put("Scope_Document",pi_Customer_Technical_ProposalList);
+// updatePIMap.put("Final_Vendor_Disti_Quote",pi_Final_Vendor_Disti_QuoteList);
+// updatePIMap.put("Other_Documents",Other_DocumentsList);
+// updatePIMap.put("Signed_Agreement",pi_Signed_AgreementList);
+// updatePIMap.put("Contract_If_needed",pi_Contract_If_neededList);
+// updatePIMap.put("Excel_Costing_Sheet",pi_Excel_Costing_SheetList);
+// //Dont Trigger Workflow
+// workflowList = List();
+// updatePIMap.put("trigger",workflowList);
+// /////////////////////
+// dataUpdateMap = Map();
+// dataList = List();
+// dataList.add(updatePIMap);
+// dataUpdateMap.put("data",dataList);
+// info dataUpdateMap;
+// deletedFiles = invokeurl
+// [
+// 	url :crmBaseUrl + "Project_Initiations/" + projID
+// 	type :PUT
+// 	parameters:dataUpdateMap.toString()
+// 	connection:"crm"
+// ];
+// info "Deleted Files == " + deletedFiles;
+/*********************************************************************/
+oppDetails = zoho.crm.getRecordById("Deals",projIniDetails.getJSON("Opportunity").getJSON("id"));
+info "Opp Details == " + oppDetails;
+if(oppDetails != null)
+{
+	updateMap = Map();
+	RfP = oppDetails.getJSON("Request_for_Proposal");
+	clientTechnicalProposal = oppDetails.getJSON("Customer_Technical_Proposal");
+	Vendor_DistiQuote = oppDetails.getJSON("Final_Vendor_Disti_Quote");
+	pdf_Financial_Proposal = oppDetails.getJSON("pdf_Financial_Proposal");
+	Client_Purchase_Order = oppDetails.getJSON("Client_Purchase_Order");
+	Contract_if_needed = oppDetails.getJSON("Contract_if_needed");
+	Excel_Costing_Sheet = oppDetails.getJSON("Excel_Costing_Sheet");
+	/****************************************Code for Uploading RFP Files***********************************/
+	RFP_File_PermaLink_from_Projects = "";
+	if(RfP != null)
+	{
+		if(RfP.size() > 0)
+		{
+			rfpattachment_IdS_List = List();
+			for each index i in RfP
+			{
+				r_f_p = RfP.get(i);
+				info r_f_p;
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + r_f_p.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				if(i == 0)
+				{
+					//Upload File in Zprojects
+					header = Map();
+					header.put("Accept","application/vnd.api+json");
+					file = invokeurl
+					[
+						url :crmBaseUrl + "files?id=" + r_f_p.getJSON("file_Id")
+						type :GET
+						connection:"crm"
+					];
+					filename = file.getFileName();
+					extension = filename.subString(filename.lastIndexOf("."));
+					list_of_text = List();
+					list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+					list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+					list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+					list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+					info "List of Text == " + list_of_text;
+					file1UploadtoProj = invokeurl
+					[
+						url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+						type :POST
+						headers:header
+						files:list_of_text
+						connection:"projects"
+					];
+					info "Uploaded File in Projects == " + file1UploadtoProj;
+					if(file1UploadtoProj.getJSON("data") != null)
+					{
+						fileData = file1UploadtoProj.getJSON("data").get(0);
+						RFP_File_PermaLink_from_Projects = fileData.getJSON("attributes").getJSON("Permalink");
+					}
+				}
+				//Upload to ZFS
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				rfpFileMap = Map();
+				// 				rfpFileMap.put("File_Id__s",fileID);
+				// 				rfpattachment_IdS_List.add(rfpFileMap);
+			}
+			// 			info "RFP File IDS List == " + rfpattachment_IdS_List;
+			// 			if(rfpattachment_IdS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Other_Documents",rfpattachment_IdS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Uploading Technical Propsal Files***********************************/
+	clientTechProp_PermaLink_for_proj = "";
+	if(clientTechnicalProposal != null)
+	{
+		if(clientTechnicalProposal.size() > 0)
+		{
+			clientTechnicalProposal_IDS_List = List();
+			for each index i in clientTechnicalProposal
+			{
+				clientTechProp = clientTechnicalProposal.get(i);
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + clientTechProp.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + clientTechProp.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				extension = filename.subString(filename.lastIndexOf("."));
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				file2UploadtoProj = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + file2UploadtoProj;
+				if(file2UploadtoProj.getJSON("data") != null)
+				{
+					file2UploadtoProj = file2UploadtoProj.getJSON("data").get(0);
+					clientTechProp_PermaLink_for_proj = file2UploadtoProj.getJSON("attributes").getJSON("Permalink");
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				clientTechPropFileMap = Map();
+				// 				clientTechPropFileMap.put("File_Id__s",fileID);
+				// 				clientTechnicalProposal_IDS_List.add(clientTechPropFileMap);
+			}
+			// 			info "Client tech Prop File IDS List == " + clientTechnicalProposal_IDS_List;
+			// 			if(clientTechnicalProposal_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Scope_Document",clientTechnicalProposal_IDS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Uploading Vendor_DistiQuote Files***********************************/
+	final_vend_disti_quote_file_permalink = "";
+	if(Vendor_DistiQuote != null)
+	{
+		if(Vendor_DistiQuote.size() > 0)
+		{
+			Vendor_DistiQuote_IDS_List = List();
+			for each  Vendor_Disti in Vendor_DistiQuote
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Vendor_Disti.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Vendor_Disti.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				fileUpload3 = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + fileUpload3;
+				if(fileUpload3.getJSON("data") != null)
+				{
+					fileUpload3 = fileUpload3.getJSON("data").get(0);
+					final_vend_disti_quote_file_permalink = fileUpload3.getJSON("attributes").getJSON("Permalink");
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				Vendor_DistiFileMap = Map();
+				// 				Vendor_DistiFileMap.put("File_Id__s",fileID);
+				// 				Vendor_DistiQuote_IDS_List.add(Vendor_DistiFileMap);
+			}
+			// 			info "Vendor District Quote File IDS List == " + Vendor_DistiQuote_IDS_List;
+			// 			if(Vendor_DistiQuote_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Final_Vendor_Disti_Quote",Vendor_DistiQuote_IDS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Uploading pdf_Financial_Proposal Files***********************************/
+	pdf_financial_prop_file_permalink = "";
+	if(pdf_Financial_Proposal != null)
+	{
+		if(pdf_Financial_Proposal.size() > 0)
+		{
+			pdf_Financial_Proposal_IDS_List = List();
+			for each  pd_final_prop in pdf_Financial_Proposal
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + pd_final_prop.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + pd_final_prop.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				fileUpload4 = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + fileUpload4;
+				if(fileUpload4.getJSON("data") != null)
+				{
+					fileUpload4 = fileUpload4.getJSON("data").get(0);
+					pdf_financial_prop_file_permalink = fileUpload4.getJSON("attributes").getJSON("Permalink");
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				pd_final_propFileMap = Map();
+				// 				pd_final_propFileMap.put("File_Id__s",fileID);
+				// 				pdf_Financial_Proposal_IDS_List.add(pd_final_propFileMap);
+			}
+			// 			info "pdf_financial _prop File IDS List == " + pdf_Financial_Proposal_IDS_List;
+			// 			if(pdf_Financial_Proposal_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("PDF_Financial_Proposal",pdf_Financial_Proposal_IDS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Uploading Client_Purchase_Order Files***********************************/
+	client_po_file_permalink = "";
+	if(Client_Purchase_Order != null)
+	{
+		if(Client_Purchase_Order.size() > 0)
+		{
+			Client_Purchase_Order_IDS_List = List();
+			for each  client_po in Client_Purchase_Order
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + client_po.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + client_po.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				fileUpload5 = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + fileUpload5;
+				if(fileUpload5.getJSON("data") != null)
+				{
+					fileUpload5 = fileUpload5.getJSON("data").get(0);
+					client_po_file_permalink = fileUpload5.getJSON("attributes").getJSON("Permalink");
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				client_poFileMap = Map();
+				// 				client_poFileMap.put("File_Id__s",fileID);
+				// 				Client_Purchase_Order_IDS_List.add(client_poFileMap);
+			}
+			// 			info "client PO File IDS List == " + Client_Purchase_Order_IDS_List;
+			// 			if(Client_Purchase_Order_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Signed_Agreement",Client_Purchase_Order_IDS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Uploading Contract_if_needed Files***********************************/
+	contract_if_needed_file_permalink = "";
+	if(Contract_if_needed != null)
+	{
+		if(Contract_if_needed.size() > 0)
+		{
+			Contract_if_needed_IDS_List = List();
+			for each  Contract_ifNeededRec in Contract_if_needed
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Contract_ifNeededRec.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Contract_ifNeededRec.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				fileUpload6 = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + fileUpload6;
+				if(fileUpload6.getJSON("data") != null)
+				{
+					fileUpload6 = fileUpload6.getJSON("data").get(0);
+					contract_if_needed_file_permalink = fileUpload6.getJSON("attributes").getJSON("Permalink");
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				Contract_ifNeededRecFileMap = Map();
+				// 				Contract_ifNeededRecFileMap.put("File_Id__s",fileID);
+				// 				Contract_if_needed_IDS_List.add(Contract_ifNeededRecFileMap);
+			}
+			info "Contract if Needed IDS List == " + Contract_if_needed_IDS_List;
+			// 			if(Contract_if_needed_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Contract_If_needed",Contract_if_needed_IDS_List);
+			// 			}
+		}
+	}
+	/****************************************Code for Excel Costing Sheet Files***********************************/
+	excel_costing_sheet_file_permalink = "";
+	// here its assigned as ""
+	if(Excel_Costing_Sheet != null)
+	{
+		if(Excel_Costing_Sheet.size() > 0)
+		{
+			Excel_Costing_Sheet_IDS_List = List();
+			for each  Excel_Costing_SheetRec in Excel_Costing_Sheet
+			{
+				getFile = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Excel_Costing_SheetRec.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				info "response get File == " + getFile;
+				getFile.setParamName("file");
+				//Upload File in Zprojects
+				header = Map();
+				header.put("Accept","application/vnd.api+json");
+				file = invokeurl
+				[
+					url :crmBaseUrl + "files?id=" + Excel_Costing_SheetRec.getJSON("file_Id")
+					type :GET
+					connection:"crm"
+				];
+				filename = file.getFileName();
+				list_of_text = List();
+				list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+				list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+				list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+				list_of_text.add({"paramName":"content","content":file,"stringPart":"false"});
+				info "List of Text == " + list_of_text;
+				fileUpload7 = invokeurl
+				[
+					url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+					type :POST
+					headers:header
+					files:list_of_text
+					connection:"projects"
+				];
+				info "Uploaded File in Projects == " + fileUpload7;
+				//Here if File is Present in Crm Rec then it will be Uploaded First and then File Url will be passed to that Field. If File is not Present in crm then it will be empty string
+				if(fileUpload7.getJSON("data") != null)
+				{
+					fileUpload7 = fileUpload7.getJSON("data").get(0);
+					excel_costing_sheet_file_permalink = fileUpload7.getJSON("attributes").getJSON("Permalink");
+					info excel_costing_sheet_file_permalink;
+					info "I am in";
+				}
+				// 				response = invokeurl
+				// 				[
+				// 					url :crmBaseUrl + "files"
+				// 					type :POST
+				// 					files:getFile
+				// 					connection:"crm"
+				// 				];
+				// 				info "Uploaded File == " + response;
+				// 				fileID = response.getJSON("data").get(0).getJSON("details").getJSON("id");
+				// 				Excel_Costing_SheetRecMap = Map();
+				// 				Excel_Costing_SheetRecMap.put("File_Id__s",fileID);
+				// 				Excel_Costing_Sheet_IDS_List.add(Excel_Costing_SheetRecMap);
+			}
+			// 			info "Excel Costing Sheet  IDS List == " + Excel_Costing_Sheet_IDS_List;
+			// 			if(Excel_Costing_Sheet_IDS_List.size() > 0)
+			// 			{
+			// 				updateMap.put("Excel_Costing_Sheet",Excel_Costing_Sheet_IDS_List);
+			// 			}
+		}
+	}
+	/************************Get Client Financial Proposal , Client Costing Sheet from PI and Opportunity download their mail merge pdf and upload to Projects*********************/
+	if(projIniDetails.getJSON("Quotation") != null)
+	{
+		qoutation_mail_merge_params = Map();
+		qoutation_mail_merge_params_list = List();
+		qoutation_mail_merge = Map();
+		mail_merge_template_name_map = Map();
+		mail_merge_template_name_map.put("name","Financial Proposal English");
+		qoutation_mail_merge.put("output_format","pdf");
+		qoutation_mail_merge.put("file_name","Client Financial Proposal");
+		qoutation_mail_merge.put("mail_merge_template",mail_merge_template_name_map);
+		qoutation_mail_merge_params_list.add(qoutation_mail_merge);
+		qoutation_mail_merge_params.put("download_mail_merge",qoutation_mail_merge_params_list);
+		downloaded_qoutation_mail_merge = invokeurl
+		[
+			url :crmBaseUrl + "Sales_Orders/" + projIniDetails.getJSON("Quotation").getJSON("id") + "/actions/download_mail_merge"
+			type :POST
+			parameters:qoutation_mail_merge_params.toString()
+			connection:"crm"
+		];
+		info "Downloaded Quotation Mail Merge template == " + downloaded_qoutation_mail_merge;
+		if(downloaded_qoutation_mail_merge.isFile())
+		{
+			filename = downloaded_qoutation_mail_merge.getFileName();
+			header = Map();
+			header.put("Accept","application/vnd.api+json");
+			list_of_text = List();
+			list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+			list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+			list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+			list_of_text.add({"paramName":"content","content":downloaded_qoutation_mail_merge,"stringPart":"false"});
+			info "List of Text == " + list_of_text;
+			uploaded_client_financial_proposal = invokeurl
+			[
+				url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+				type :POST
+				headers:header
+				files:list_of_text
+				connection:"projects"
+			];
+			info "Uploaded Client Financial Proposal in Projects == " + uploaded_client_financial_proposal;
+			if(uploaded_client_financial_proposal.getJSON("data") != null)
+			{
+				uploaded_client_financial_proposal = uploaded_client_financial_proposal.getJSON("data").get(0);
+				client_financial_proposal_link = uploaded_client_financial_proposal.getJSON("attributes").getJSON("Permalink");
+				info client_financial_proposal_link;
+			}
+		}
+	}
+	if(projIniDetails.getJSON("Client_Costing_Sheet") != null)
+	{
+		clientCS_mail_merge_params = Map();
+		clientCS_mail_merge_params_list = List();
+		clientCS_mail_merge = Map();
+		clientCS_mail_merge_template_name_map = Map();
+		clientCS_mail_merge_template_name_map.put("name","Costing Analysis Sheet");
+		clientCS_mail_merge.put("output_format","pdf");
+		clientCS_mail_merge.put("file_name","Client Costing Sheet");
+		clientCS_mail_merge.put("mail_merge_template",clientCS_mail_merge_template_name_map);
+		clientCS_mail_merge_params_list.add(clientCS_mail_merge);
+		clientCS_mail_merge_params.put("download_mail_merge",clientCS_mail_merge_params_list);
+		downloaded_clientCS_mail_merge = invokeurl
+		[
+			url :crmBaseUrl + "Quotes/" + projIniDetails.getJSON("Client_Costing_Sheet").getJSON("id") + "/actions/download_mail_merge"
+			type :POST
+			parameters:clientCS_mail_merge_params.toString()
+			connection:"crm"
+		];
+		info "Downloaded Client CS Mail Merge template == " + downloaded_clientCS_mail_merge;
+		if(downloaded_clientCS_mail_merge.isFile())
+		{
+			filename = downloaded_clientCS_mail_merge.getFileName();
+			header = Map();
+			header.put("Accept","application/vnd.api+json");
+			list_of_text = List();
+			list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+			list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+			list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+			list_of_text.add({"paramName":"content","content":downloaded_clientCS_mail_merge,"stringPart":"false"});
+			info "List of Text == " + list_of_text;
+			uploaded_client_cs = invokeurl
+			[
+				url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+				type :POST
+				headers:header
+				files:list_of_text
+				connection:"projects"
+			];
+			info "Uploaded Client Costing Sheet in Projects == " + uploaded_client_cs;
+			if(uploaded_client_cs.getJSON("data") != null)
+			{
+				uploaded_client_cs = uploaded_client_cs.getJSON("data").get(0);
+				client_costing_sheet_link = uploaded_client_cs.getJSON("attributes").getJSON("Permalink");
+				info client_costing_sheet_link;
+			}
+		}
+	}
+	if(projIniDetails.getJSON("Opportunity") != null)
+	{
+		opp_mail_merge_params = Map();
+		opp_mail_merge_params_list = List();
+		opp_mail_merge = Map();
+		opp_mail_merge_template_name_map = Map();
+		opp_mail_merge_template_name_map.put("name","Opportunity Details");
+		opp_mail_merge.put("output_format","pdf");
+		opp_mail_merge.put("file_name","Opportunity");
+		opp_mail_merge.put("mail_merge_template",opp_mail_merge_template_name_map);
+		opp_mail_merge_params_list.add(opp_mail_merge);
+		opp_mail_merge_params.put("download_mail_merge",opp_mail_merge_params_list);
+		downloaded_opp_mail_merge = invokeurl
+		[
+			url :crmBaseUrl + "Deals/" + projIniDetails.getJSON("Opportunity").getJSON("id") + "/actions/download_mail_merge"
+			type :POST
+			parameters:opp_mail_merge_params.toString()
+			connection:"crm"
+		];
+		info "Downloaded Opp Mail Merge template == " + downloaded_opp_mail_merge;
+		if(downloaded_opp_mail_merge.isFile())
+		{
+			filename = downloaded_opp_mail_merge.getFileName();
+			header = Map();
+			header.put("Accept","application/vnd.api+json");
+			list_of_text = List();
+			list_of_text.add({"paramName":"filename","content":filename,"stringPart":"true"});
+			list_of_text.add({"paramName":"parent_id","content":folderId,"stringPart":"true"});
+			list_of_text.add({"paramName":"override-name-exist","content":"true","stringPart":"true"});
+			list_of_text.add({"paramName":"content","content":downloaded_opp_mail_merge,"stringPart":"false"});
+			info "List of Text == " + list_of_text;
+			uploaded_opp_details = invokeurl
+			[
+				url :"https://www.zohoapis.sa/workdrive/api/v1/upload"
+				type :POST
+				headers:header
+				files:list_of_text
+				connection:"projects"
+			];
+			info "Uploaded Opportunity Details in Projects == " + uploaded_opp_details;
+			if(uploaded_opp_details.getJSON("data") != null)
+			{
+				uploaded_opp_details = uploaded_opp_details.getJSON("data").get(0);
+				opportunity_details_link = uploaded_opp_details.getJSON("attributes").getJSON("Permalink");
+				info opportunity_details_link;
+			}
+		}
+	}
+	// 	updateMap.put("trigger",{});
+	// 	dataLis = List();
+	// 	dataLis.add(updateMap);
+	// 	finalMap = Map();
+	// 	finalMap.put("data",dataLis);
+	// 	info "Update Map == " + updateMap;
+	// 	if(updateMap != null)
+	// 	{
+	// 		updatedProjectInitiationRec = invokeurl
+	// 		[
+	// 			url :crmBaseUrl + "Project_Initiations/" + projID
+	// 			type :PUT
+	// 			parameters:finalMap.toString()
+	// 			connection:"crm"
+	// 		];
+	// 		info "Updated Proj Initiation == " + updatedProjectInitiationRec;
+	// 	}
+	//This is the Code which i am using to Update Uploaded File links in Zoho Projects. 
+	projectsUpdateMap = Map();
+	projectsUpdateMap.put("UDF_CHAR17",RFP_File_PermaLink_from_Projects);
+	projectsUpdateMap.put("UDF_CHAR18",clientTechProp_PermaLink_for_proj);
+	projectsUpdateMap.put("UDF_CHAR19",final_vend_disti_quote_file_permalink);
+	projectsUpdateMap.put("UDF_CHAR20",pdf_financial_prop_file_permalink);
+	projectsUpdateMap.put("UDF_CHAR21",client_po_file_permalink);
+	projectsUpdateMap.put("UDF_CHAR15",contract_if_needed_file_permalink);
+	projectsUpdateMap.put("UDF_CHAR16",excel_costing_sheet_file_permalink);
+	projectsUpdateMap.put("UDF_CHAR7",client_costing_sheet_link);
+	projectsUpdateMap.put("UDF_CHAR6",client_financial_proposal_link);
+	projectsUpdateMap.put("UDF_CHAR22",opportunity_details_link);
+	info "Update files Links == " + projectsUpdateMap;
+	updatedProjectinProjects = invokeurl
+	[
+		url :projectsBaseUrl + "/restapi/portal/" + projectPortalID + "/projects/" + zProjID + "/"
+		type :POST
+		parameters:projectsUpdateMap
+		connection:"projects"
+	];
+	info "Updated in Projects == " + updatedProjectinProjects;
+}
+return "";
+}
