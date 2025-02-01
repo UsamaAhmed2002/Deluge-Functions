@@ -1,0 +1,27 @@
+if(row.Start_Time != null && row.Start_Time < row.End_Time)
+{
+	s1 = zoho.currentdate.toString() + " " + row.Start_Time.toString();
+	s2 = zoho.currentdate.toString() + " " + row.End_Time.toString();
+	t = (s2.toTime() - s1.toTime()) / 1000;
+	miz = t / 60;
+	h = t / 3600;
+	remainingSec = t % 3600;
+	if(remainingSec > 60)
+	{
+		min = remainingSec / 60;
+		sec = remainingSec % 60;
+	}
+	else
+	{
+		min = 0;
+		sec = remainingSec;
+	}
+	final = h.toLong() + ":" + min.toLong() + ":" + sec.toLong();
+	row.Total=h.toLong() + min.toLong() / 100;
+}
+else if(row.Start_Time != null && row.Start_Time > row.End_Time)
+{
+	row.End_Time=null;
+	alert "End Time cannot be before Start Time!";
+}
+input.Total_Hours_Worked1 = input.Timesheet.sum(Total);
