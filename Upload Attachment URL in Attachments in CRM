@@ -1,0 +1,13 @@
+file_download_url = file_data.getJSON("download_url");
+		info file_download_url;
+		upload_attachment_map = Map();
+		upload_attachment_map.put("attachmentUrl",file_download_url);
+		upload_attachment_map.put("title","dsdsad.xlsx");
+// 		file_download_url.setParamName("attachmentUrl");
+		uploaded_attachment = invokeUrl[
+			url : "https://www.zohoapis.com/crm/v7/Production_Records/"+id+"/Attachments"
+			type:POST
+			parameters:upload_attachment_map
+			connection:"cbs_zoho_crm"
+		];
+		info uploaded_attachment;
