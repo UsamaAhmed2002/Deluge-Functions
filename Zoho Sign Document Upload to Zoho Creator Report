@@ -1,0 +1,52 @@
+void Create_Transfer_Request_in_EDC_App(map payload)
+{
+info payload;
+creator_base_url = "https://www.zohoapis.com/creator/v2.1/data/hughanfrederick/edc-list/";
+if(payload.getJSON("request_status") == "completed")
+{
+	document_id = payload.getJSON("document_id");
+	request_id = payload.getJSON("request_id");
+	//Download Document Attachment
+	downloaded_attchment = zoho.sign.downloadDocument(request_id);
+	info "Downloaded Attachment === ";
+	info downloaded_attchment.isFile();
+	if(downloaded_attchment.isFile())
+	{
+		//Now Search the Corresponding Record in EDC App's Signed Docs Form Based on reqeust_id
+		search_criteria = "DocumentID==\"" + request_id + "\"";
+		info search_criteria;
+		searched_request_record = zoho.creator.getRecords("hughanfrederick","edc-list","All_Transfer_Docs",search_criteria,1,1,"creator");
+		info "searched records == ";
+		info searched_request_record;
+		if(searched_request_record.getJSON("code") == 3000)
+		{
+			info "record found";
+			record_details = searched_request_record.getJSON("data").get(0);
+			record_id = record_details.getJSON("ID");
+			//Update the Record Signed Date Field First
+			payload_map = Map();
+			update_map = Map();
+			update_map.put("Signed_Date",zoho.currentdate.toString("MM-dd-yyyy"));
+			payload_map.put("data",update_map);
+			updated_record = invokeurl
+			[
+				url :creator_base_url + "report/All_Transfer_Patients/" + record_id
+				type :PATCH
+				parameters:payload_map.toString()
+				connection:"creator"
+			];
+			info "Updated Record == " + updated_record;
+			//Now Upload the File to the Signed Doc Field
+			downloaded_attchment.setParamName("file");
+			response = invokeurl
+			[
+				url :creator_base_url + "report/All_Transfer_Docs/" + record_id + "/Signed_Doc/upload"
+				type :POST
+				files:downloaded_attchment
+				connection:"creator"
+			];
+			info "Uploaded File == " + response;
+		}
+	}
+}
+}
