@@ -1,0 +1,56 @@
+void Integrations.Push_Rental_Inv_to_Books(int inv_id)
+{
+	books_org_id = "150000448269";
+	books_base_url = "https://www.zohoapis.sa/books/v3/";
+	rec_details = Rental_Invoice_Assets[ID == inv_id];
+	// Gathering Inv Details
+	client_id = rec_details.Client_Name;
+	inv_date = encodeUrl(zoho.currentdate.toString("yyyy-MM-dd"));
+	lines_list = List();
+	for each  line in rec_details.Line_Items
+	{
+		line_map = Map();
+		line_map.put("description","Scaffolding Material Rental Invoice");
+		line_map.put("quantity",1);
+		line_map.put("tax_id","23503000000019063");
+		line_map.put("rate",line.Amount);
+		lines_list.add(line_map);
+	}
+	invoice_map = Map();
+	invoice_map.put("customer_id",client_id);
+	invoice_map.put("reference_number",rec_details.PO_No);
+	invoice_map.put("date",inv_date);
+	invoice_map.put("line_items",lines_list);
+	cf_list = List();
+	project_cf_map = Map();
+	project_cf_map.put("customfield_id","23503000000100881");
+	project_cf_map.put("value",rec_details.Project.Project_Name);
+	cf_list.add(project_cf_map);
+	invoice_map.put("custom_fields",cf_list);
+	created_invoice = zoho.books.createRecord("invoices",books_org_id,invoice_map,"books");
+	info "Created invoice ===" + created_invoice;
+	if(created_invoice.getJSON("invoice") != null)
+	{
+		created_inv_id = created_invoice.getJSON("invoice").getJSON("invoice_id");
+		rec_details.Books_Inv_ID=created_inv_id;
+		download_url = "https://creatorapp.zohopublic.sa/salman_albatinindus/fixed-assets-issuance-invoicing/record-pdf/Rental_Invoice_Assets_Report/"+inv_id+"/Monthly_Rental_Invoice/tJwNkM8w3bXNy1sapMxwgJKWvwGh7u7sqP1Qf9MfAW3XNh2yTbsMn1E2WkhDyHNVt5GEV6JAqpSPw2sN58pQWfxY6xQFpssKMu0x/";
+			downloaded_reprot = invokeurl
+			[
+				url download_url
+				type :GET
+			];
+			info downloaded_reprot.isFile();
+			if(downloaded_reprot.isFile() == true)
+			{
+				downloaded_reprot.setParamName("attachment");
+				response = invokeUrl
+				[
+				url: books_base_url + "invoices/"+created_inv_id+"/attachment?organization_id="+books_org_id
+				type: POST
+				files: downloaded_reprot
+				connection: "books"
+				];
+				info"Uplaoded File =" +  response;
+			}
+	}
+}
