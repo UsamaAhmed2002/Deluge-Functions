@@ -1,0 +1,140 @@
+<div><section id="header-container" class="">
+		<div id="pdfgen-header">
+			<img src="https://previewengine-accl.zohoexternal.com/image/WD/ko8hvb30bab7d0fd94e2487541beb7b5074fc?version=1.0&amp;width=2046&amp;height=1536" width="100%">
+		</div>
+	</section>
+	<section id="page-container" class="">
+		<div id="pdfgen-content">
+			<div class="template_body" style="width: 100%">
+				<!-- ==========================================Company Table Section Starts ====================================== -->
+				<div class="first_table" style="width: 100%">
+					<table style="width: 100%; border-collapse: collapse">
+						<tbody>
+							<tr>
+								<td style="width: 50%">
+									<font size="2"><span>AlAmara</span><br>
+										<span>Dammam EP 31422</span><br>
+										<span>Saudi Arabia </span><br>
+										<span>CR NO:2050096053</span><br>
+										<span>TRN :311175481200003</span>
+										<span>Tel:</span>
+									</font>
+								</td>
+								<td style="width: 50%" dir="rtl">
+									<p style="">
+										<font size="5"><b style="">Quotation</b>
+									</font></p>
+									<font size="2"><b>${Quotations.Quote No.}<br></b></font>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<table style="font-family: 'times new roman', times, serif; width: 100%; border-collapse: collapse">
+						<tbody>
+							<tr>
+								<td style="width: 60%">
+									<font size="2"><b><br>Bill To</b><br><b>${Customers.Customer Name}</b><br>${Quotations.Billing Street}<br>${Quotations.Billing City}<br>${Quotations.Billing Code} ${Quotations.Billing State}<br>${Quotations.Billing Country}<br>${Customers.Tax Registration Number (TRN)}</font></td>
+								<td style="width: 40%">
+									<table style="width: 100%">
+										<tbody>
+											<tr>
+												<td style="width: 50%" dir="rtl"><font size="2">: Estimate Date</font></td>
+												<td style="width: 50%" dir="rtl"><font size="2">${Quotations.Quotation Date}</font></td>
+											</tr>
+											<tr>
+												<td style="width: 50%" dir="rtl"><font size="2">: Expiry Date</font></td>
+												<td style="width: 50%" dir="rtl"><font size="2">${Quotations.Due Date}</font></td>
+											</tr>
+											<tr>
+												<td style="width: 50%" dir="rtl"><font size="2">: #Reference</font></td>
+												<td style="width: 50%" dir="rtl"><font size="2">${RFQ.RFQ Number}</font></td>
+											</tr>
+											<tr>
+												<td style="width: 50%" dir="rtl"><font size="2">: Attention</font></td>
+												<td style="width: 50%" dir="rtl"><font size="2">${Customers.Attention}</font></td>
+											</tr>
+										</tbody>
+									</table></td></tr></tbody></table></div>
+				<!-- ==========================================Bill_To_Section Ends ====================================== -->
+				<!-- ==========================================Subject Section Starts ====================================== -->
+				<div class="section"><font size="2"><span><b><br></b></span></font></div><div class="section">
+					<font size="2"><span><b>Subject :&nbsp;</b></span><span>${Quotations.Subject}</span><br>
+						<span><b>Contact Person</b> : ${Contacts.First Name} ${Contacts.Last Name}</span>
+					</font>
+				</div>
+				<!-- ==========================================Subject Section Ends ====================================== -->
+				<!-- ==========================================Line Items Section Starts ====================================== -->
+				<div class="line_items_table_Section" style="margin: 20px auto">
+					<table style="width: 100%; border-collapse: collapse">
+						<thead>
+							<tr>
+								<th style="width: 5%; background-color: rgb(44, 44, 44); color: white; padding: 10px; text-align: center"><font size="1">#</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; padding: 10px; text-align: center"><font size="1">Item Image</font></th>
+								<th style="width: 30%; background-color: rgb(44, 44, 44); color: white; text-align: left"><font size="1">Description</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; text-align: left"><font size="1">Qty</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; text-align: right"><font size="1">Rate</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; text-align: right"><font size="1">Tax %</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; text-align: right"><font size="1">Tax</font></th>
+								<th style="width: 10%; background-color: rgb(44, 44, 44); color: white; text-align: right"><font size="1"> Amount</font></th>
+							</tr>
+						</thead>
+						<tbody id="subform_1">
+							<tr>
+								<td style="text-align: center; border-bottom: 1px solid black; padding: 10px"><font size="1">${Ordered Items.S.NO}</font></td>
+								<td style="text-align: center; border-bottom: 1px solid black; padding: 10px"><font size="1">${Products.Product Image}</font></td>
+								<td style="text-align: left; border-bottom: 1px solid black">
+									<font size="1">${Products.Brand}<br>${Ordered Items.Product Name}<br>${Ordered Items.Description}</font>
+								</td>
+								<td style="text-align: left; border-bottom: 1px solid black"><font size="1">${Ordered Items.Quantity}</font></td>
+								<td style="text-align: right !important; border-bottom: 1px solid black"><font size="1">${Ordered Items.Sales Rate}</font></td>
+								<td style="text-align: right !important; border-bottom: 1px solid black"><font size="1">15</font></td>
+								<td style="text-align: right !important; border-bottom: 1px solid black"><font size="1">${Ordered Items.Tax.}</font></td>
+								<td style="text-align: right !important; border-bottom: 1px solid black"><font size="1">${Ordered Items.Total}</font></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- ==========================================Line Items Section Ends ====================================== -->
+				<!-- ==========================================Line items Total section starts ====================================== -->
+				<div class="totals_section">
+					<table style="width: 100%; border-collapse: collapse">
+						<tbody>
+							<tr>
+								<td style="width: 50%"></td>
+								<td style="width: 30%; padding: 20px"><font size="2">Sub Total</font></td>
+								<td style="text-align: right; width: 20%;"><font size="2">${Quotations.Sub Total}</font></td>
+							</tr>
+							<tr>
+								<td style="text-align: right; width: 50%;"></td>
+								<td style="width: 30%; padding: 20px"><font size="2">VAT 15%</font></td>
+								<td style="text-align: right; width: 20%;"><font size="2">${Quotations.Tax Total}</font></td></tr><tr><td style="text-align: right; width: 50%;"></td>
+								<td style="width: 30%; padding: 20px; background-color: rgba(217, 217, 217, 0.616)">
+									<font size="2"><strong>Total</strong></font>
+								</td>
+								<td style="text-align: right; width: 20%; background-color: rgba(217, 217, 217, 0.616);"><font size="2">${Quotations.Grand Total.}</font></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<!-- ==========================================Line Items Section Starts ====================================== -->
+				<!-- ==========================================Notes and T&C  Starts ====================================== -->
+				<div class="notes_t_c">
+					<p><font size="2">Notes&nbsp;</font></p><p><font size="2">${Quotations.Description}</font></p>
+					<p><font size="2">Terms and Conditions</font></p>
+					<p><font size="2">&nbsp;${Quotations.Terms and Conditions}</font></p>
+					<p>
+						<font size="2">
+							We trust that our offer meets your requirements, and we are waiting for your valuable order. However, should you require additional information or
+							clarification, please do not hesitate to contact the undersigned.
+						</font>
+					</p>
+					<font size="2"></font>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="footer-container" class="">
+		<div id="pdfgen-footer">
+			<img src="https://previewengine-accl.zohoexternal.com/image/WD/ko8hv176924862f7b4f8f9d27caf81f7ab815?version=1.0&amp;width=2046&amp;height=1536" alt="" width="100%" style="font-size: small; font-family: 'times new roman', times, serif"><br>
+		</div>
+	</section></div>
