@@ -1,0 +1,16 @@
+decimal = pries.round(2);
+			info decimal;
+			result = decimal.round(2).remove("-").toString();
+			info result;
+			// Split integer and decimal part
+			parts = result.toList(".");
+			intPart = parts.get(0);
+			info "Int Part == " + intPart;
+			decPart = ifnull(parts.get(1),"00");
+			info "Dec Part = =" + decPart;
+			// Add dot as thousand separator in intPart
+			formattedInt = intPart.remove("-").toString().replaceAll("(?<!\.\d)(?<=\d)(?=(?:\d\d\d)+\b)",".");
+			info "Formattd Int === " + formattedInt;
+			// 			// Join with comma as decimal separator
+			formattedNumber = formattedInt + "," + decPart;
+			info formattedNumber;
