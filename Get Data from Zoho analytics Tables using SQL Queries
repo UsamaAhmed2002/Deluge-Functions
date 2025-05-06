@@ -1,0 +1,90 @@
+dahua_base_url = "https://openapi.dahuasecurity.com/api/v1/";
+organizationID = organization.get("organization_id");
+books_base_url = "https://www.zohoapis.sa/books/v3/";
+info zoho.books.getRecordsByID("items",organizationID,"3784000017615751","zohobooks");
+tokenrec = zoho.books.getRecords("cm_dahua_access_token",organizationID,"zohobooks");
+info "token rec " + tokenrec;
+if(tokenrec.get("message") == "success")
+{
+	ztoken = tokenrec.getJSON("module_records").getJSON("cf_dahua_token");
+	info "token ==" + ztoken;
+}
+dahua_header_data = Map();
+dahua_header_data.put("Content-Type","application/json");
+dahua_header_data.put("Authorization",ztoken);
+// //get items from zoho books which were updated in PRevious Month
+// // Step 1: Calculate the start and end dates of the previous month
+today = zoho.currentdate;
+start_of_current_month = today.toStartOfMonth();
+end_of_previous_month = start_of_current_month.addDay(-1);
+stock_in_flow_table_view_name = zoho.encryption.urlEncode("Stock In Flow Table");
+stock_out_flow_table_view_name = zoho.encryption.urlEncode("Stock Out Flow Table");
+// Step 2: Construct the SQL query
+start_date = zoho.currentdate.addDay(-1).toString("yyyy-MM-dd");
+end_date = zoho.currentdate.toString("yyyy-MM-dd");
+stock_in_flow_query = "select \"Product ID\",\"Quantity In\",\"Transaction Date\" from \"Stock In Flow Table\" Where \"Transaction Date\" = '" + start_date + "' Order By \"Product ID\" Limit 20";
+// Step 3: URL-encode the SQL query
+email = zoho.encryption.urlEncode("simat.zoho@gmail.com");
+workspaceName = zoho.encryption.urlEncode("Zoho Books Analytics");
+api_url = "https://analyticsapi.zoho.sa/api/" + email + "/" + workspaceName;
+// Step 4: Set up the API request
+headers_map = Map();
+headers_map.put("Content-Type","application/json");
+params_map = Map();
+params_map.put("ZOHO_ACTION","EXPORT");
+params_map.put("ZOHO_OUTPUT_FORMAT","JSON");
+params_map.put("ZOHO_ERROR_FORMAT","JSON");
+params_map.put("ZOHO_API_VERSION","1.0");
+// params_map.put("ZOHO_CRITERIA",zoho_criteria);
+params_map.put("ZOHO_SQLQUERY",stock_in_flow_query);
+stock_in_flow_response = invokeurl
+[
+	url :api_url
+	type :POST
+	parameters:params_map
+	connection:"zanalytics"
+];
+info stock_in_flow_response;
+//===============================Now Get Stock Out Flow Data
+stock_out_flow_query = "select \"Product ID\",\"Quantity Out\",\"Transaction Date\" from \"Stock Out Flow Table\" Where \"Transaction Date\" = '" + start_date + "' Order By \"Product ID\" Limit 20";
+params_map.put("ZOHO_SQLQUERY",stock_out_flow_query);
+stock_out_flow_response = invokeurl
+[
+	url :api_url
+	type :POST
+	parameters:params_map
+	connection:"zanalytics"
+];
+info stock_out_flow_response;
+// // Initialize lists to hold extracted data
+stock_in_data = list();
+stock_out_data = list();
+// Function to extract relevant data from the Stock In Flow response
+if(stock_in_flow_response.get("response") != null && stock_in_flow_response.get("response").get("result") != null)
+{
+	result = stock_in_flow_response.get("response").get("result");
+	columns = result.get("column_order");
+	rows = result.get("rows");
+	// Determine indices of relevant columns
+	column_indices = Map();
+	relevant_columns = {"Product ID","Transaction Date","Quantity In","Quantity Used","Quantity Available","Stock in Hand"};
+	for each  col in relevant_columns
+	{
+		if(columns.contains(col))
+		{
+			column_indices.put(col,columns.indexOf(col));
+		}
+	}
+	// Extract relevant data
+	for each  row in rows
+	{
+		data_map = Map();
+		for each  col in column_indices.keys()
+		{
+			col_index = column_indices.get(col);
+			data_map.put(col,row.get(col_index));
+		}
+		stock_in_data.add(data_map);
+	}
+}
+info "Stock in Data === " + stock_in_data;
