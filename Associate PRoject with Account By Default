@@ -1,0 +1,18 @@
+mp = Map();
+mp.put("name",dealRecord.getJSON("Deal_Name"));
+idMap = Map();
+idMap.put("id",accountID);
+mp.put("accounts",idMap.tolist());
+datalist = list();
+datalist.add(mp);
+datamp = Map();
+datamp.put("data",datalist);
+resp = invokeurl
+[
+	url :"https://www.zohoapis.com/crm/v2/Accounts/" + accountID + "/Zoho_Projects/" + projectId
+	type :POST
+	parameters:datamp.toString()
+	connection:"creator"
+];
+info "===PROJECT ASSOCIATION===";
+info resp;
