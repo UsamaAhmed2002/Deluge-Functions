@@ -1,0 +1,462 @@
+<%{
+	// 1. Fetch Production Records for a PO
+	po = Add_Purchase_Order[PO_No == input.po_no];
+	if(po.Status != "" && po.Status != null)
+	{
+		po_status = po.Status.toUpperCase();
+	}
+	else
+	{
+		po_status = po.Status;
+	}
+	stages_and_its_score_list_map = {"Production_Art_Recs":{"stage_name":"Production Art Recs","stage_score":1},"Preflight_Recs":{"stage_name":"Preflight Recs","stage_score":2},"Nesting_Layouts":{"stage_name":"Nesting/Layouts","stage_score":3},"Reg_Dots_Recs":{"stage_name":"Reg Dots Recs","stage_score":4},"Press_Check_Recs":{"stage_name":"Press Check Recs","stage_score":5},"Loading_Into_RIP_Recs":{"stage_name":"Loading Into RIP Recs","stage_score":6},"Printing_Recs":{"stage_name":"Printing Recs","stage_score":7},"Transfer_Recs":{"stage_name":"Transfer Recs","stage_score":8},"Cutting_Recs":{"stage_name":"Cutting Recs","stage_score":9},"Bundling_Recs":{"stage_name":"Bundling Recs","stage_score":10},"Sewing_Recs":{"stage_name":"Sewing Recs","stage_score":11},"Trim_QC_Recs":{"stage_name":"Trim/QC Recs","stage_score":12},"Packaging_Final_Recs":{"stage_name":"Packaging/Final Recs","stage_score":13},"EC_STC_Packing_Recs":{"stage_name":"EC Shipping Recs","stage_score":14},"Warehousing_Recs":{"stage_name":"Warehousing Recs","stage_score":15},"Partials":{"stage_name":"Partials","stage_score":16}};
+	lowest_score_list = List();
+	lowest_stage_score_now = null;
+	least_performing_production_no = null;
+	least_performing_production_id = null;
+	deal_id = null;
+	production_list = zoho.crm.searchRecords("Production_Records","(PO_No:equals:" + input.po_no + ")");
+	for each  prod_rec in production_list
+	{
+		if(deal_id == null)
+		{
+			crm_deal = prod_rec.getJSON("Deal");
+			if(crm_deal != null)
+			{
+				deal_id = crm_deal.getJSON("id");
+			}
+		}
+		prod_rec_stage = prod_rec.getJSON("Production_Stages");
+		for each  module_name in stages_and_its_score_list_map.keys()
+		{
+			module_stats = stages_and_its_score_list_map.get(module_name);
+			stage_name = module_stats.getJSON("stage_name");
+			if(prod_rec_stage == stage_name)
+			{
+				stage_score = module_stats.getJSON("stage_score");
+				lowest_score_list.add(stage_score);
+				//
+				if(lowest_stage_score_now == null)
+				{
+					lowest_stage_score_now = stage_score;
+					least_performing_production_no = prod_rec.getJSON("Name");
+					least_performing_production_id = prod_rec.getJSON("id");
+				}
+				else if(stage_score < lowest_stage_score_now)
+				{
+					lowest_stage_score_now = stage_score;
+					least_performing_production_no = prod_rec.getJSON("Name");
+					least_performing_production_id = prod_rec.getJSON("id");
+				}
+			}
+		}
+	}
+	lowest_stage_score = lowest_score_list.smallest();
+	// Match score and find key + stage_name
+	matched_key = "";
+	matched_stage_name = "";
+	matched_stage_score = 0;
+	for each  module_name in stages_and_its_score_list_map.keys()
+	{
+		module_stats = stages_and_its_score_list_map.get(module_name);
+		if(module_stats.getJSON("stage_score") == lowest_stage_score)
+		{
+			matched_key = module_name;
+			matched_stage_name = module_stats.getJSON("stage_name");
+			matched_stage_score = lowest_stage_score;
+		}
+	}
+	info "Matched Key: " + matched_key;
+	info "Stage Name: " + matched_stage_name;
+	info "Stage Score: " + matched_stage_score;
+	info "Production List: " + production_list;
+	// 2. Initialize HTML content
+	html = "<div class='tab-wrapper'>";
+	// 3. Loop through records for tabs
+	count = 1;
+	css = "";
+	for each  rec in production_list
+	{
+		id = "tab" + count.toString();
+		if(count == 1)
+		{
+			checked = "checked";
+		}
+		else
+		{
+			checked = "";
+		}
+		// Radio button and label
+		html = html + "<input type='radio' name='tabs' id='" + id + "' " + checked + ">";
+		html = html + "<label for='" + id + "' class='tab-label'>Prod-" + rec.getJSON("Name") + "</label>";
+		css = css + "#tab" + count.toString() + ":checked ~ #content" + count.toString() + " { display: block !important; } ";
+		css = css + "#tab" + count.toString() + ":not(:checked) ~ #content" + count.toString() + " { display: none !important; } ";
+		count = count + 1;
+	}
+	// 4. Reset counter for content blocks
+	count = 1;
+	for each  record in production_list
+	{
+		if(count == 1)
+		{
+			display = "style='display:block'";
+		}
+		else
+		{
+			display = "style='display:none'";
+		}
+		pr_id = record.get("id");
+		pr_crm_url = "https://crm.zoho.com/crm/org817483640/tab/CustomModule8/" + pr_id;
+		wd_folder_url = ifNull(record.get("NGC_WD_Folder_URL"),"");
+		html = html + "<div id='content" + count.toString() + "' class='tab-content' " + display + ">";
+		html = html + "<div class='info-section'>";
+		// Order Info Card
+		html = html + "<div class='info-card'>";
+		html = html + "<h4>Order Info</h4>";
+		html = html + "<div class='info-row'><span class='label'>PR Name:</span><span>" + record.get("PR_Name") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>CRM URL:</span><span><a href='" + pr_crm_url + "' >OPEN REC</a></span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Deal No:</span><span>" + ifNull(record.get("Deal_No"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Production Stages:</span><span>" + ifNull(record.get("Production_Stages"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Server Art File Name:</span><span>" + ifNull(record.get("Server_Art_File_Name"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>OMG Qty Confirmed:</span><span>" + ifNull(record.get("OMG_Qty_Confirmed"),"") + "</span></div>";
+		html = html + "</div>";
+		// Product Info Card
+		html = html + "<div class='info-card'>";
+		html = html + "<h4>Product Info</h4>";
+		html = html + "<div class='info-row'><span class='label'>Item SKU:</span><span>" + ifNull(record.get("Item_Sku1"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>WD Folder URL:</span><span><a href='" + wd_folder_url + "' >OPEN WD Folder</a></span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Total Qty:</span><span>" + ifNull(record.get("Total_Qty"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Stage:</span><span>" + ifNull(record.get("Status"),"") + "</span></div>";
+		html = html + "<hr>";
+		html = html + "<div class='info-row'><span class='label'>Item Description:</span><span>" + ifNull(record.get("Item_Description"),"") + "</span></div>";
+		html = html + "</div>";
+		html = html + "<div class='stages_buttons' >";
+		for each  key in stages_and_its_score_list_map.keys()
+		{
+			// 			html = html + "<div class='' style='margin-bottom:16px; padding:16px; border:1px solid #ddd; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,0.1); background-color:#fff;'>";
+			// 			html = html + "<h4 style='margin-bottom:12px; font-size:18px; color:#333;'>" + key.replaceAll("_"," ") + " Info</h4>";
+			rec_url = "#Page:Production_BOMs?module_api_name=" + key + "&record_id=" + record.get("id") + "&zc_LoadIn=dialog";
+			html = html + "<a class='stage_button' href='" + rec_url + "' style='padding:10px 20px; background-color:#007bff; color:#fff; text-decoration:none; border-radius:5px; font-size:14px; font-weight:500;'>View " + key.replaceAll("_"," ") + " Info</a>";
+			// 			html = html + "</div>";
+		}
+		html = html + "</div>";
+		html = html + "</div>";
+		// Close info-section
+		html = html + "</div>";
+		// Close tab-content
+		count = count + 1;
+	}
+	html = html + "</div>";
+	// 5. Set the HTML to a Panel or HTML widget
+	Dynamic_HTML = html;
+	%>
+<style>
+  .tab-wrapper {
+    margin-bottom: 20px;
+  }
+
+  .tab-wrapper input[type="radio"] {
+    display: none;
+  }
+
+  .tab-label {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #e6f3ff;
+    color: #007acc;
+    font-weight: bold;
+    border-radius: 8px 8 Fee8px 0 0;
+    margin-right: 5px;
+    cursor: pointer;
+  }
+
+  .tab-wrapper input[type="radio"]:checked + .tab-label {
+    background-color: #007acc;
+    color: #fff;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 20px;
+    background: white;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    margin-top: -2px;
+  }
+
+<%=css%>
+  /* Stage Box Styling */
+  .stage-box {
+    margin-bottom: 25px;
+    border: 1px solid #d9e8f3;
+    padding: 15px;
+    border-radius: 8px;
+  }
+
+  .stage-box h3 {
+    margin-top: 0;
+    color: #007acc;
+  }
+
+  .subform-block {
+    margin-left: 10px;
+    padding-left: 10px;
+    border-left: 3px solid #cce9ff;
+    margin-bottom: 10px;
+  }
+
+  .subform-block strong {
+    display: block;
+    font-weight: 600;
+    color: #444;
+  }
+
+  .subform-block p {
+    margin: 0;
+    color: #666;
+  }
+  .header-banner {
+    background: linear-gradient(to right, #e0f3ff, #c0e5ff);
+    padding: 30px 40px;
+    border-bottom: 1px solid #d3e8f7;
+    border-radius: 0 0 20px 20px;
+    box-shadow: 0 4px 12px rgba(0, 144, 255, 0.08);
+  }
+
+  .header-banner h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #007acc;
+    font-weight: 700;
+  }
+
+  .dashboard-container {
+    padding: 30px 40px;
+  }
+
+  .highlight-section {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  .highlight-card {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .highlight-card h2 {
+    margin: 0;
+    font-size: 14px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .highlight-card p {
+    margin-top: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #333;
+  }
+
+  .details-section {
+    background-color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+
+  .details-section h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #0057a0;
+    border-bottom: 1px solid #dce8f5;
+    padding-bottom: 0.5rem;
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-label {
+    color: #555;
+    font-weight: 600;
+  }
+
+  .detail-value {
+    color: #222;
+  }
+
+  .info-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .info-card {
+    flex: 1 1 45%;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 91, 187, 0.08);
+    padding: 5px;
+    border: 1px solid #e3edf9;
+  }
+
+  .info-card h4 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #0057a0;
+    border-bottom: 1px solid #dce8f5;
+    padding-bottom: 0.5rem;
+  }
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.4rem 0;
+    font-size: 0.95rem;
+  }
+
+  .label {
+    font-weight: 600;
+    color: #3b4c68;
+  }
+
+  .info-row span:last-child {
+    color: #4a4a4a;
+  }
+
+  .po-info-bar {
+    background: #f0f7ff;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+
+  .po-info-item {
+    font-size: 1.1rem;
+  }
+
+  .label {
+    font-weight: 600;
+    color: #333;
+    margin-right: 0.3rem;
+  }
+
+  .po-link {
+    color: #0077cc;
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .po-link:hover {
+    text-decoration: underline;
+  }
+
+  .prominent {
+    font-size: 1.3rem;
+    color: #0055aa;
+  }
+
+  
+
+  /* Styling for hr */
+  hr {
+    border: 0;
+    border-top: 1px solid #f0f0f0;
+    margin: 0.4rem 0;
+  }
+  .stages_buttons{
+	 display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+	  width:100%;
+  }
+  .stage_button{
+	  flex: 1 1 20%;
+  }
+</style>
+
+<!-- Tabs and Content -->
+<div class="header-banner">
+  <h1>PO Dashboard</h1>
+</div>
+
+<div class="po-info-bar">
+  <div class="po-info-item">
+    <span class="label">PO No:</span>
+    <a href="https://books.zoho.com/app/817488714#/purchaseorders/<%=po.BooksID%>?filter_by=Status.All&per_page=25&sort_column=created_time&sort_order=D" class="po-link prominent" target="_blank">
+      <%=po.PO_No%> 
+    </a>
+  </div>
+  <div class="po-info-item">
+    <span class="label">Deal No:</span>
+    <a href="https://crm.zoho.com/crm/org817483640/tab/Potentials/<%=deal_id%>" target="_blank" class="po-link">
+      <%=po.Deal_Number%> 
+    </a>
+  </div>
+  <div class="po-info-item">
+    <span class="label">Least Performing Stage:</span>
+    <span class="prominent">
+     <%=matched_stage_name%>
+    </span>
+  </div>
+  <div class="po-info-item">
+    <span class="label">Least Performing Production:</span>
+    <span class="prominent">
+	 <a href="https://crm.zoho.com/crm/org817483640/tab/CustomModule8/<%=least_performing_production_id%>" target="_blank" > <%=least_performing_production_no%></a>
+    
+    </span>
+  </div>
+</div>
+
+  <div class="details-section">
+    <div class="detail-item">
+      <span class="detail-label">Customer No</span>
+      <span class="detail-value"><%=po.Customer_No%></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">FACTEX Date</span>
+      <span class="detail-value"><%=po.FACTEX_Date%></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Order Date</span>
+      <span class="detail-value"><%=po.Order_Date%></span>
+    </div>
+    <div class="detail-item">
+      <span class="detail-label">Status</span>
+      <span class="detail-value"><%=po_status%></span>
+    </div>
+    
+  </div>
+</div>
+
+<%=html%>
+<%
+
+}%>
