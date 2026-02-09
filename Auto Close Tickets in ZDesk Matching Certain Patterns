@@ -1,0 +1,72 @@
+/*
+=====================================================================
+Zoho Desk – Auto-Close Related Tickets Based on Ereignis Type
+=====================================================================
+This script performs the following actions:
+
+1. Fetches a Zoho Desk Ticket using the provided ticket_id.
+2. Reads the ticket subject and extracts the value after "Ereignis:".
+3. Determines whether the ticket is related to:
+   - "Alarm"
+   - "Rückstellung"
+4. If the ticket is a "Rückstellung":
+   - Searches for all related tickets with the same base subject
+   - Automatically closes those tickets by updating their status to "Geschlossen"
+
+Important:
+- The script assumes the ticket subject follows this format:
+  "<Base Subject> Ereignis:<Type>"
+=====================================================================
+*/
+//-------------------------------------------------------
+/* STEP 1: FETCH TICKET DETAILS FROM ZOHO DESK */
+//-------------------------------------------------------
+ticket_details = zoho.desk.getRecordById("20106189411","tickets",ticket_id,"desk");
+// Extract the subject of the ticket
+new_ticket_subject = ticket_details.getJSON("subject");
+// info "Ticket Subject === " ;
+// info new_ticket_subject;
+//-------------------------------------------------------
+/* STEP 2: DETERMINE EVENT TYPE FROM SUBJECT */
+//-------------------------------------------------------
+// Extract the suffix after "Ereignis:" and clean whitespace
+ticket_for = new_ticket_subject.getSuffixIgnoreCase("Ereignis:").trim();
+// Identify event type
+if(ticket_for == "Alarm")
+{
+	alarm_ticket = true;
+}
+else if(ticket_for == "Rückstellung")
+{
+	ticket_for_Ruckstellung = true;
+}
+// info "Is Ticket for Alarm === " + alarm_ticket;
+// info "Is Ticket For Ruckstellung ==== " + ticket_for_Ruckstellung;
+//-------------------------------------------------------
+/* STEP 3: IF RÜCKSTELLUNG → FIND AND CLOSE RELATED TICKETS */
+//-------------------------------------------------------
+if(ticket_for_Ruckstellung == true)
+{
+	zoho.desk.update("20106189411","tickets",ticket_id,{"status":"Geschlossen"},"desk");
+	// Extract the base subject (before "Ereignis:")
+	subject_to_search_for = new_ticket_subject.getPrefixIgnoreCase("Ereignis:");
+	// 	info "Subject To Search for === " ;
+	// 	info subject_to_search_for;
+	// Prepare search filter for related tickets
+	search_query = {"subject":subject_to_search_for};
+	subject_to_search_for = zoho.encryption.urlEncode(subject_to_search_for);
+	searched_tickets = invokeurl
+	[
+		url :"https://support.stadtritter.de/supportapi/zd/stadtritter/api/v1/search?searchStr=" + subject_to_search_for + "&limit=100"
+		type :GET
+		connection:"desk"
+	];
+	info searched_tickets;
+	// Loop through found tickets and close them
+	for each  searched_ticket in searched_tickets.getJSON("data")
+	{
+		updated_ticket = zoho.desk.update("20106189411","tickets",searched_ticket.getJSON("id"),{"status":"Geschlossen"},"desk");
+		// 		info "Updated Ticket ==== ";
+		// 		info updated_ticket;
+	}
+}
